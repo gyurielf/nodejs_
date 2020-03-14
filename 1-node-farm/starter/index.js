@@ -35,8 +35,22 @@ console.log('Will read file!'); */
 
 /////////////////////////////
 /// SERVER
-// const templateOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8');
-const templateCards = fs.readFileSync(`${__dirname}/templates/template-cards.html`, 'utf-8');
+const replaceTemplate = (template, product) => {
+    let output = template.replace(/{%PRODUCTNAME%}/g, product.productName);
+    output = output.replace (/{%IMAGE%}/g, product.image);
+    output = output.replace (/{%FROMCOUNTRY%}/g, product.from);
+    output = output.replace (/{%NUTRIENTS%}/g, product.nutrients);
+    output = output.replace (/{%QUANTITY%}/g, product.quantity);
+    output = output.replace (/{%PRICE%}/g, product.price);
+    output = output.replace (/{%DESCRIPTION%}/g, product.description);
+    output = output.replace (/{%ID%}/g, product.id);
+    if (!product.organic) output = output.replace (/{%NOT_ORGANIC%}/g, 'not-organic');
+
+    return output;
+}
+
+const templateOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8');
+const templateCards = fs.readFileSync(`${__dirname}/templates/template-card.html`, 'utf-8');
 const templateProduct = fs.readFileSync(`${__dirname}/templates/template-product.html`, 'utf-8');
 
 
@@ -55,7 +69,12 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, {
             'Content-type': 'text/html; charset=UTF-8'
         });
-        res.end('templateOverview');
+        /* Egy tömbbön loop-al végigmegyek. Az első el, a tömb aktuális eleme. Egy functiont (replaceTemplate) ráhívok minden elemre, 
+        ahol a functionnak két argumentet adok be, a templateCards-ot (egy html oldal, a benne lévő összes tartalommal) és az aktuális elemét a dataObj tömbbnek.
+         */
+        const cardsHtml = dataObj.map( el => replaceTemplate(templateCards, el));
+
+        res.end(templateOverview);
 
         // PRODUCT PAGE
     } else if (pathName === '/product')  {
