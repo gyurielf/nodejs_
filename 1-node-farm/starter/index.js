@@ -35,9 +35,9 @@ console.log('Will read file!'); */
 
 /////////////////////////////
 /// SERVER
+const templateOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8');
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
-
 
 const server = http.createServer((req, res) => {
     // console.log(req.url);
@@ -51,6 +51,7 @@ const server = http.createServer((req, res) => {
 
         // OVERVIEW PAGE
     } else if (pathName === '/overview') {
+
         dataObj.forEach(element => {
             console.log(element.id);
         });
