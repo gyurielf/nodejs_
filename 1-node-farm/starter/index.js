@@ -72,9 +72,12 @@ const server = http.createServer((req, res) => {
         /* Egy tömbbön loop-al végigmegyek. Az első el, a tömb aktuális eleme. Egy functiont (replaceTemplate) ráhívok minden elemre, 
         ahol a functionnak két argumentet adok be, a templateCards-ot (egy html oldal, a benne lévő összes tartalommal) és az aktuális elemét a dataObj tömbbnek.
          */
-        const cardsHtml = dataObj.map( el => replaceTemplate(templateCards, el));
+        const cardsHtml = dataObj.map( el => replaceTemplate(templateCards, el)).join('');
 
-        res.end(templateOverview);
+        /* ITT a templateOverview (itt most egy html file) replacelem a {%PRODUCT_CARDS%}-ot (ez a productok helye, ahová ki kel lrajzolni a productokat.) */
+        const output = templateOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
+
+        res.end(output);
 
         // PRODUCT PAGE
     } else if (pathName === '/product')  {
