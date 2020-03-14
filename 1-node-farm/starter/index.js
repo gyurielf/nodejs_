@@ -45,8 +45,11 @@ const server = http.createServer((req, res) => {
 
     const pathName = req.url;
 
+    // HOME PAGE
     if (pathName === '/') {
         res.end('HOME');
+
+        // OVERVIEW PAGE
     } else if (pathName === '/overview') {
         dataObj.forEach(element => {
             console.log(element.id);
@@ -55,11 +58,17 @@ const server = http.createServer((req, res) => {
             'Content-type': 'text/html; charset=UTF-8'
         });
         res.end('Overview');
+
+        // PRODUCT PAGE
     } else if (pathName === '/product')  {
         res.end('THIS IS THE PRODUCT');
+
+        // API
     } else if (pathName === '/api'){
         res.writeHead(200, {'Content-type': 'application/json'});       
-        res.end(data);        
+        res.end(data);       
+        
+        // NOT FOUND
     } else {
         res.writeHead(404, {
             'Content-type': 'text/html; charset=UTF-8'
