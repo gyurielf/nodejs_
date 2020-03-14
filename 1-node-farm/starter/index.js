@@ -35,30 +35,27 @@ console.log('Will read file!'); */
 
 /////////////////////////////
 /// SERVER
-const templateOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8');
+// const templateOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8');
+const templateCards = fs.readFileSync(`${__dirname}/templates/template-cards.html`, 'utf-8');
+const templateProduct = fs.readFileSync(`${__dirname}/templates/template-product.html`, 'utf-8');
+
+
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-    // console.log(req.url);
-    // res.end('Hello from the server -kgy!');
-
     const pathName = req.url;
 
     // HOME PAGE
     if (pathName === '/') {
         res.end('HOME');
-
+        
         // OVERVIEW PAGE
     } else if (pathName === '/overview') {
-
-        dataObj.forEach(element => {
-            console.log(element.id);
-        });
         res.writeHead(200, {
             'Content-type': 'text/html; charset=UTF-8'
         });
-        res.end('Overview');
+        res.end('templateOverview');
 
         // PRODUCT PAGE
     } else if (pathName === '/product')  {
