@@ -58,19 +58,24 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-    const pathName = req.url;
+    // console.log(req.url);
+    const {query, pathname} = url.parse(req.url, true);
+    // const pathName = req.url;
 
     // HOME PAGE
-    if (pathName === '/') {
+    if (pathname === '/') {
         res.end('HOME');
         
         // OVERVIEW PAGE
-    } else if (pathName === '/overview') {
+    } else if (pathname === '/overview') {
         res.writeHead(200, {
             'Content-type': 'text/html; charset=UTF-8'
         });
         /* Egy tömbbön loop-al végigmegyek. Az első el, a tömb aktuális eleme. Egy functiont (replaceTemplate) ráhívok minden elemre, 
-        ahol a functionnak két argumentet adok be, a templateCards-ot (egy html oldal, a benne lévő összes tartalommal) és az aktuális elemét a dataObj tömbbnek.
+        ahol a functionnak két argumentet adok be, a templateCards-ot (egy html oldal, a benne lévő összes tartalommal) 
+        és az aktuális elemét a dataObj tömbbnek.
+        Végezetül, hogy ne egy tömbböt kapjunk a cardsHtml változóba, egy nagy string-et csinálunk belőle.
+        ezt úgy tudjuk megtenni, hogy a tömb végén .join('')-t használunk ez az összes ide tartozó elemet joinolni foja egy stringbe.
          */
         const cardsHtml = dataObj.map( el => replaceTemplate(templateCards, el)).join('');
 
@@ -80,11 +85,15 @@ const server = http.createServer((req, res) => {
         res.end(output);
 
         // PRODUCT PAGE
-    } else if (pathName === '/product')  {
-        res.end('THIS IS THE PRODUCT');
+    } else if (pathname === '/product')  {
+        res.writeHead(200, {'Content-type': 'text/html; charset=UTF-8'});
+        const product = dataObj[query.id];
+        const output = replaceTemplate(templateProduct, product);
+        // console.log(query);        
+        res.end(output);
 
         // API
-    } else if (pathName === '/api'){
+    } else if (pathname === '/api'){
         res.writeHead(200, {'Content-type': 'application/json'});       
         res.end(data);       
         
