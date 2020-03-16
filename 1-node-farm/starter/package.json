@@ -10,5 +10,11 @@
   "license": "ISC",
   "comments": {
     "npmPackageTypes": "We use dependencies (usin in our code) and developer-dependencies (pl compilers etc.)"
+  },
+  "dependencies": {
+    "slugify": "^1.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
   }
 }
