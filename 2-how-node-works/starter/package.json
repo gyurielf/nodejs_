@@ -1,0 +1,11 @@
+{
+  "name": "how-node-works",
+  "version": "1.0.0",
+  "description": "eventloop in practice",
+  "main": "event-loop.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gy",
+  "license": "ISC"
+}
