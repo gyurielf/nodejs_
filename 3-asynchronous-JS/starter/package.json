@@ -1,0 +1,14 @@
+{
+  "name": "async-js",
+  "version": "1.0.0",
+  "description": "Promises and Async / Await",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gy",
+  "license": "ISC",
+  "dependencies": {
+    "superagent": "^5.2.2"
+  }
+}
