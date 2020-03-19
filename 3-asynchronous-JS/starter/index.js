@@ -8,7 +8,6 @@ const superagent = require('superagent');
 //   });
 // const url = require('url');
 
-
 // PROMISE
 
 const dogData = fs.readFile(`${__dirname}/dog.txt`, (err, data) => {
@@ -16,7 +15,7 @@ const dogData = fs.readFile(`${__dirname}/dog.txt`, (err, data) => {
 
   superagent
     .get(`https://dog.ceo/api/breed/${data}/images/random`)
-    .end((err, res) => {
+    .then(res => {
       if (err) return console.log(err.message);
       console.log(res.body.message);
 
@@ -24,6 +23,9 @@ const dogData = fs.readFile(`${__dirname}/dog.txt`, (err, data) => {
         if (err) return console.log(err.message);
         console.log('Random img saved to file!');
       });
+    })
+    .catch(err => {
+      console.log(err.message);
     });
 });
 
