@@ -36,13 +36,34 @@ const getDogPic = async () => {
     console.log('Random dog image saved to file!');
   } catch (err) {
     err.message ? console.log(err.message) : console.log(err);
+    throw err;
   }
   return '2: READY!';
 };
+
+(async () => {
+  try {
+    console.log('1: will get dog pics!');
+    const x = await getDogPic();
+    console.log(x);
+    console.log('3: Done geting dog pics!'); 
+  } catch (err) {
+    console.log('Error!');
+  }
+})();
+
+/* 
 console.log('1: will get dog pics!');
-const x = getDogPic();
-console.log(x);
-console.log('3: Done geting dog pics!');
+// Nem fog értéket kapni az x, mivel a háttérben fut a kód, így az X még nem kap értéket.
+// const x = getDogPic();
+// console.log(x);
+getDogPic().then(x => {
+  console.log(x);
+  console.log('3: Done geting dog pics!');
+}).catch(err => {
+  console.log('Error!');
+})
+ */
 
 // readFilePro(`${__dirname}/dog.txt`)
 //   .then(data => {
