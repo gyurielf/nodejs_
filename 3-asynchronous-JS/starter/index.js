@@ -36,13 +36,14 @@ const getDogPic = async () => {
     const res3Pro = superagent.get(
       `https://dog.ceo/api/breed/${data}/images/random`
     );
-
+      // Egyszerre több PROMISE fut egyidejűjeg, amiknek az eredménye az all változóban fog tárolódni, ha teljesül.
+      // Aztán azon azon végigmegyek és minden eleméből kimentem a szükséges adatot(IMG url-je) az imgs változóba.
     const all = await Promise.all([res1Pro, res2Pro, res3Pro]);
     const imgs = all.map(el => el.body.message);
     console.log(imgs);
 
-    // console.log(res.body.message);
-
+      // A fájl írásakor hozzácsatolok egy plusz \r\n-t a változóhoz, aminek a ttartalmát ki akarom íratni a fájlba, 
+      // ezért az imgs változó tartalma (tömb elemjei), minden egyes eleme új sorba kerül.
     await writeFilePro('dog-img.txt', imgs.join('\r\n'));
     console.log('Random dog image saved to file!');
   } catch (err) {
