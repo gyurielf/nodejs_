@@ -21,9 +21,10 @@ const writeFilePro = (file, data) => {
   });
 };
 
+// ASYNC / AWAIT -- SYNTATIC SUGAR FOR PROMISES
 const getDogPic = async () => {
   try {
-    const data = await readFilePro(`${__dirname}/dogg.txt`);
+    const data = await readFilePro(`${__dirname}/dog.txt`);
     console.log(`Breed: ${data}`);
 
     const res = await superagent.get(
@@ -36,8 +37,12 @@ const getDogPic = async () => {
   } catch (err) {
     err.message ? console.log(err.message) : console.log(err);
   }
+  return '2: READY!';
 };
-getDogPic();
+console.log('1: will get dog pics!');
+const x = getDogPic();
+console.log(x);
+console.log('3: Done geting dog pics!');
 
 // readFilePro(`${__dirname}/dog.txt`)
 //   .then(data => {
