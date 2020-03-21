@@ -15,7 +15,7 @@ const textOut = `This is what we know about the avocado: ${textIn}.\nCreated on 
 fs.writeFileSync('./txt/output.txt', textOut, 'utf-8');
 console.log('File written!'); */
 
-// Non-blocking synchronous way
+// Non-blocking asynchronous way
 /* fs.readFile('./txt/starta.txt', 'utf-8', (err, data1) => {
     if (err) return console.log(`ERROR, file doesn't exist or empty.`);
 
