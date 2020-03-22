@@ -5,6 +5,17 @@ const app = express();
 app.disable('x-powered-by');
 app.use(express.json());
 
+/* 
+app.get('/', (req, res) => {
+  res
+    .status(200)
+    .json({ message: 'Hello from the server side!', app: 'Natours' });
+});
+app.post('/', (req, res) => {
+    app.head();
+    res.send('You can post to this enpoint');
+}) 
+*/
 const tours = JSON.parse(
   fs.readFileSync(
     `${__dirname}/dev-data/data/tours-simple.json`,
@@ -14,7 +25,7 @@ const tours = JSON.parse(
       return data;
     }
   )
-)
+);
 
 // READ
 app.get(`/api/v1/tours`, (req, res) => {
@@ -25,12 +36,18 @@ app.get(`/api/v1/tours`, (req, res) => {
       tours
     }
   });
-})
+});
 
 app.get(`/api/v1/tours/:id`, (req, res) => {
+  // Saját ötlet, működik.
+  // const tour = tours[req.params.id];
+
+  // Trick - if we have a number, but thats a string. just create a new variable, and then multiply with 1, and automatically will be a number.
   const id = req.params.id * 1;
   const tour = tours.find(el => el.id === id);
 
+  // handling if tour(with this id) invalid, or doesnt exist.
+  // if (id > tours.length) {
   if (!tour) {
     return res.status(404).json({
       status: 'error',
@@ -43,8 +60,12 @@ app.get(`/api/v1/tours/:id`, (req, res) => {
     data: {
       tours: tour
     }
-  })
-})
+    //   results: tours.length,
+    //   data: {
+    //     tours
+    //   }
+  });
+});
 
 // CREATE
 app.post(`/api/v1/tours`, (req, res) => {
@@ -63,7 +84,7 @@ app.post(`/api/v1/tours`, (req, res) => {
       });
     }
   );
-})
+});
 
 // UPDATE
 app.patch(`/api/v1/tours/:id`, (req, res) => {
@@ -82,7 +103,7 @@ app.patch(`/api/v1/tours/:id`, (req, res) => {
       tour: '<updatedTour>'
     }
   });
-})
+});
 
 // DELETE
 app.delete(`/api/v1/tours/:id`, (req, res) => {
@@ -98,10 +119,10 @@ app.delete(`/api/v1/tours/:id`, (req, res) => {
   res.status(204).json({
     status: 'success',
     data: null    
-  })
-})
+  });
+});
 
 const port = 8000;
 app.listen(port, () => {
   console.log(`Appp running on port ${port}`);
-})
+});
