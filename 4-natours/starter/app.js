@@ -26,7 +26,6 @@ const getAllTours = (req, res) => {
     }
   });
 };
-app.get(`/api/v1/tours`, getAllTours);
 
 // READ/LIST A TOUR BASED ON ID
 const getTour = (req, res) => {
@@ -46,7 +45,6 @@ const getTour = (req, res) => {
     }
   });
 };
-app.get(`/api/v1/tours/:id`, getTour);
 
 // CREATE A TOUR
 const createTour = (req, res) => {
@@ -66,7 +64,6 @@ const createTour = (req, res) => {
     }
   );
 };
-app.post(`/api/v1/tours`, createTour);
 
 // UPDATE A TOUR BASED ON ID
 const updateTour = (req, res) => {
@@ -85,7 +82,6 @@ const updateTour = (req, res) => {
     }
   });
 };
-app.patch(`/api/v1/tours/:id`, updateTour);
 
 // DELETE A TOUR BASED ON ID
 const deleteTour = (req, res) => {
@@ -103,7 +99,26 @@ const deleteTour = (req, res) => {
     data: null
   });
 };
-app.delete(`/api/v1/tours/:id`, deleteTour);
+
+// ROUTES/ENDPOINTS
+// app.get(`/api/v1/tours`, getAllTours);
+// app.get(`/api/v1/tours/:id`, getTour);
+// app.post(`/api/v1/tours`, createTour);
+// app.patch(`/api/v1/tours/:id`, updateTour);
+// app.delete(`/api/v1/tours/:id`, deleteTour);
+
+// EVEN BETTER THAN THE TOP
+app
+  .route('/api/v1/tours')
+  .get(getAllTours)
+  .post(createTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
+
 
 // SERVER
 const port = 8000;
