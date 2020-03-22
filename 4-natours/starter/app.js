@@ -24,7 +24,7 @@ const getAllTours = (req, res) => {
     data: {
       tours
     }
-  });
+  })
 };
 
 // READ/LIST A TOUR BASED ON ID
@@ -60,9 +60,9 @@ const createTour = (req, res) => {
         data: {
           tour: newTour
         }
-      });
+      })
     }
-  );
+  )
 };
 
 // UPDATE A TOUR BASED ON ID
@@ -123,5 +123,5 @@ app
 // SERVER
 const port = 8000;
 app.listen(port, () => {
-  console.log(`Appp running on port ${port}`);
+  console.log(`Appp running on port ${port}`)
 });
