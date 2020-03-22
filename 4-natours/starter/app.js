@@ -14,10 +14,10 @@ const tours = JSON.parse(
       return data;
     }
   )
-)
+);
 
-// READ
-app.get(`/api/v1/tours`, (req, res) => {
+// READ/LIST ALL TOURS
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -25,9 +25,11 @@ app.get(`/api/v1/tours`, (req, res) => {
       tours
     }
   });
-})
+};
+app.get(`/api/v1/tours`, getAllTours);
 
-app.get(`/api/v1/tours/:id`, (req, res) => {
+// READ/LIST A TOUR BASED ON ID
+const getTour = (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find(el => el.id === id);
 
@@ -37,17 +39,17 @@ app.get(`/api/v1/tours/:id`, (req, res) => {
       message: 'Invalid ID'
     });
   }
-
   res.status(200).json({
     status: 'success',
     data: {
       tours: tour
     }
-  })
-})
+  });
+};
+app.get(`/api/v1/tours/:id`, getTour);
 
-// CREATE
-app.post(`/api/v1/tours`, (req, res) => {
+// CREATE A TOUR
+const createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
@@ -63,10 +65,11 @@ app.post(`/api/v1/tours`, (req, res) => {
       });
     }
   );
-})
+};
+app.post(`/api/v1/tours`, createTour);
 
-// UPDATE
-app.patch(`/api/v1/tours/:id`, (req, res) => {
+// UPDATE A TOUR BASED ON ID
+const updateTour = (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       status: 'Error',
@@ -75,17 +78,17 @@ app.patch(`/api/v1/tours/:id`, (req, res) => {
       }
     });
   }
-
   res.status(200).json({
     status: 'success',
     data: {
       tour: '<updatedTour>'
     }
   });
-})
+};
+app.patch(`/api/v1/tours/:id`, updateTour);
 
-// DELETE
-app.delete(`/api/v1/tours/:id`, (req, res) => {
+// DELETE A TOUR BASED ON ID
+const deleteTour = (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       status: 'Error',
@@ -97,11 +100,13 @@ app.delete(`/api/v1/tours/:id`, (req, res) => {
   // 204 status = NO CONTENT; usually dont send data back.
   res.status(204).json({
     status: 'success',
-    data: null    
-  })
-})
+    data: null
+  });
+};
+app.delete(`/api/v1/tours/:id`, deleteTour);
 
+// SERVER
 const port = 8000;
 app.listen(port, () => {
   console.log(`Appp running on port ${port}`);
-})
+});
