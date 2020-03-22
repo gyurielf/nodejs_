@@ -5,6 +5,17 @@ const app = express();
 app.disable('x-powered-by');
 app.use(express.json());
 
+// If we dont use the next at the and, the req res cycle will be stuck.
+app.use((req, res, next) => {
+  console.log('Hello from the middleware!');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+  });
+
 const tours = JSON.parse(
   fs.readFileSync(
     `${__dirname}/dev-data/data/tours-simple.json`,
@@ -18,13 +29,15 @@ const tours = JSON.parse(
 
 // READ/LIST ALL TOURS
 const getAllTours = (req, res) => {
+  console.log(req.requestTime)
   res.status(200).json({
     status: 'success',
+    requestDate: req.requestTime,
     results: tours.length,
     data: {
       tours
     }
-  })
+  });
 };
 
 // READ/LIST A TOUR BASED ON ID
@@ -60,9 +73,9 @@ const createTour = (req, res) => {
         data: {
           tour: newTour
         }
-      })
+      });
     }
-  )
+  );
 };
 
 // UPDATE A TOUR BASED ON ID
@@ -119,9 +132,8 @@ app
   .patch(updateTour)
   .delete(deleteTour);
 
-
 // SERVER
 const port = 8000;
 app.listen(port, () => {
-  console.log(`Appp running on port ${port}`)
+  console.log(`Appp running on port ${port}`);
 });
