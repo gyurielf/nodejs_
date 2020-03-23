@@ -1,4 +1,3 @@
-
 const express = require('express');
 const morgan = require('morgan');
 
@@ -11,6 +10,7 @@ app.disable('x-powered-by');
 
 // ###### 1) MIDDLEWARES
 // If we dont use the next at the and, the req res cycle will be stuck.
+
 app.use(morgan('dev'));
 app.use(express.json());
 
@@ -24,10 +24,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// 2) TOUR ROUTES
 app.use('/api/v1/tours', tourRouter);
+
+// 3) USER ROUTES
 app.use('/api/v1/users', userRouter);
 
-// ###### 5) START SERVER
+// ###### 4) START SERVER
 // SERVER
 const port = 8000;
 app.listen(port, () => {

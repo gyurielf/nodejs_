@@ -31,10 +31,8 @@ const getAllUsers = (req, res) => {
     });
   };
 
-// ###### ROUTES
 const router = express.Router();
 
-// ###### USER ROUTES
 router
   .route('/')
   .get(getAllUsers)

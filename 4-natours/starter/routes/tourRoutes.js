@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 
+// FILE READ AND JSON PARSE
 const tours = JSON.parse(
     fs.readFileSync(
       `${__dirname}/../dev-data/data/tours-simple.json`,
@@ -111,4 +112,6 @@ router
   .patch(updateTour)
   .delete(deleteTour);
 
+  
+// EXPORT MODULE
 module.exports = router;
