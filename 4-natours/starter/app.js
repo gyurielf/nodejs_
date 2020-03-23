@@ -6,7 +6,7 @@ const morgan = require('morgan');
 app.disable('x-powered-by');
 
 
-// ###### 1) MIDLEWARES
+// ###### 1) MIDDLEWARES
 // If we dont use the next at the and, the req res cycle will be stuck.
 app.use(morgan('dev'));
 app.use(express.json());
