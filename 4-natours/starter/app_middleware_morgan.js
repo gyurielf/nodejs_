@@ -5,11 +5,11 @@ const morgan = require('morgan');
 
 app.disable('x-powered-by');
 
+
 // ###### 1) MIDDLEWARES
 // If we dont use the next at the and, the req res cycle will be stuck.
 app.use(morgan('dev'));
 app.use(express.json());
-
 app.use((req, res, next) => {
   console.log('Hello from the middleware!');
   next();
@@ -18,7 +18,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
-});
+  });
 
 const tours = JSON.parse(
   fs.readFileSync(
@@ -30,10 +30,10 @@ const tours = JSON.parse(
     }
   )
 );
-// ###### 2) ROUTE HANDLERS
+// ###### ROUTE HANDLERS
 // READ/LIST ALL TOURS
 const getAllTours = (req, res) => {
-  console.log(req.requestTime);
+  console.log(req.requestTime)
   res.status(200).json({
     status: 'success',
     requestDate: req.requestTime,
@@ -116,70 +116,27 @@ const deleteTour = (req, res) => {
     data: null
   });
 };
-// 3) ###### USER ROUT HANDLERS
-const getAllUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!'
-  });
-};
-const createUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!'
-  });
-};
-const getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!'
-  });
-};
-const updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!'
-  });
-};
-const deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!'
-  });
-};
+
+// ###### 3) ROUTES/ENDPOINTS
+// app.get(`/api/v1/tours`, getAllTours);
+// app.get(`/api/v1/tours/:id`, getTour);
+// app.post(`/api/v1/tours`, createTour);
+// app.patch(`/api/v1/tours/:id`, updateTour);
+// app.delete(`/api/v1/tours/:id`, deleteTour);
 
 // EVEN BETTER THAN THE TOP
-// 4) ###### ROUTES
-const tourRouter = express.Router();
-const userRouter = express.Router();
-
-tourRouter
-  .route('/')
+app
+  .route('/api/v1/tours')
   .get(getAllTours)
   .post(createTour);
 
-tourRouter
-  .route('/:id')
+app
+  .route('/api/v1/tours/:id')
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
 
-// ###### USER ROUTES
-userRouter
-  .route('/')
-  .get(getAllUsers)
-  .post(createUser);
-
-userRouter
-  .route('/:id')
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser);
-
-app.use('/api/v1/tours', tourRouter);
-app.use('/api/v1/users', userRouter);
-
-// ###### 5) START SERVER
+// ###### 4) START SERVER
 // SERVER
 const port = 8000;
 app.listen(port, () => {
