@@ -11,8 +11,15 @@ app.disable('x-powered-by');
 // ###### 1) MIDDLEWARES
 // If we dont use the next at the and, the req res cycle will be stuck.
 
-app.use(morgan('dev'));
-app.use(express.json());
+// console.log(process.env.NODE_ENV);
+if(process.env.NODE_ENV === 'development'){
+  app.use(morgan('dev'));
+}
+
+app.use(express.json()); 
+
+// Works like a root folder
+app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
   console.log('Hello from the middleware!');

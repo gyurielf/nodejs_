@@ -8,18 +8,25 @@ const {
   getTour,
   updateTour,
   deleteTour,
-  checkID
+  checkID,
+  checkBody
 } = require('./../controllers/tourController');
 
 const router = express.Router();
 
 // This val param is hold the id param value in order to get acces to that id
 router.param('id', checkID);
+// router.param('', checkBody);
+
+// Create a checkbody middleware
+// Check if body contains the name and the price property
+// if not return 400(bad request);
+// Add it to the post handler stack.
 
 router
   .route('/')
   .get(getAllTours)
-  .post(createTour);
+  .post(checkBody, createTour);
 
 router
   .route('/:id')

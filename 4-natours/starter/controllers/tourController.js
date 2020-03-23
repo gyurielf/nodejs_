@@ -25,6 +25,20 @@ exports.checkID = (req, res, next, val) => {
   next();
 };
 
+exports.checkBody = (req, res, next) => {
+  // console.log(`This value is :${val}`);
+  if (!req.body.name || req.body.name.length == 0 || !req.body.price) {
+    console.log('Error catched!');
+    return res.status(404).json({
+      status: 'Error',
+      data: {
+        tour: `Missing NAME and / or PRICE parameter`
+      }
+    });
+  }
+  next();
+};
+
 // READ/LIST ALL TOURS
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
@@ -60,6 +74,7 @@ exports.createTour = (req, res) => {
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     err => {
+        console.log('file write success')
       res.status(200).json({
         status: 'success',
         data: {
