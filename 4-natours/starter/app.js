@@ -24,15 +24,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// 2) TOUR ROUTES
+// ###### 2) TOUR ROUTES
 app.use('/api/v1/tours', tourRouter);
 
-// 3) USER ROUTES
+// ###### 3) USER ROUTES
 app.use('/api/v1/users', userRouter);
 
 // ###### 4) START SERVER
 // SERVER
-const port = 8000;
-app.listen(port, () => {
-  console.log(`Appp running on port ${port}`);
-});
+module.exports = app;
