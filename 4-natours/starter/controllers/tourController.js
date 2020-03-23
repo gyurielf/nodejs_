@@ -2,15 +2,28 @@ const fs = require('fs');
 
 // FILE READ AND JSON PARSE
 const tours = JSON.parse(
-    fs.readFileSync(
-      `${__dirname}/../dev-data/data/tours-simple.json`,
-      'utf-8',
-      (err, data) => {
-        if (err) return console.log(`ERROR, file doesn't exist or empty.`);
-        return data;
+  fs.readFileSync(
+    `${__dirname}/../dev-data/data/tours-simple.json`,
+    'utf-8',
+    (err, data) => {
+      if (err) return console.log(`ERROR, file doesn't exist or empty.`);
+      return data;
+    }
+  )
+);
+
+exports.checkID = (req, res, next, val) => {
+  console.log(`This id is :${val}`);
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'Error',
+      data: {
+        tour: 'Invalid ID'
       }
-    )
-  );
+    });
+  }
+  next();
+};
 
 // READ/LIST ALL TOURS
 exports.getAllTours = (req, res) => {
@@ -30,12 +43,6 @@ exports.getTour = (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find(el => el.id === id);
 
-  if (!tour) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'Invalid ID'
-    });
-  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -65,14 +72,6 @@ exports.createTour = (req, res) => {
 
 // UPDATE A TOUR BASED ON ID
 exports.updateTour = (req, res) => {
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'Error',
-      data: {
-        tour: 'Invalid ID'
-      }
-    });
-  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -83,14 +82,6 @@ exports.updateTour = (req, res) => {
 
 // DELETE A TOUR BASED ON ID
 exports.deleteTour = (req, res) => {
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'Error',
-      data: {
-        tour: 'Invalid ID'
-      }
-    });
-  }
   // 204 status = NO CONTENT; usually dont send data back.
   res.status(204).json({
     status: 'success',

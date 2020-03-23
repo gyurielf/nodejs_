@@ -7,10 +7,14 @@ const {
   createTour,
   getTour,
   updateTour,
-  deleteTour
+  deleteTour,
+  checkID
 } = require('./../controllers/tourController');
 
 const router = express.Router();
+
+// This val param is hold the id param value in order to get acces to that id.
+router.param('id', checkID);
 
 router
   .route('/')
