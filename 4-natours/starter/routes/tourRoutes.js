@@ -10,7 +10,7 @@ const {
   deleteTour,
   checkID,
   checkBody
-} = require('./../controllers/tourController');
+} = require('../controllers/tourController');
 
 const router = express.Router();
 
@@ -23,16 +23,9 @@ router.param('id', checkID);
 // if not return 400(bad request);
 // Add it to the post handler stack.
 
-router
-  .route('/')
-  .get(getAllTours)
-  .post(checkBody, createTour);
+router.route('/').get(getAllTours).post(checkBody, createTour);
 
-router
-  .route('/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
 /* 
 router

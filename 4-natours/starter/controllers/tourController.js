@@ -27,7 +27,7 @@ exports.checkID = (req, res, next, val) => {
 
 exports.checkBody = (req, res, next) => {
   // console.log(`This value is :${val}`);
-  if (!req.body.name || req.body.name.length == 0 || !req.body.price) {
+  if (!req.body.name || req.body.name.length === 0 || !req.body.price) {
     console.log('Error catched!');
     return res.status(404).json({
       status: 'Error',
@@ -55,7 +55,7 @@ exports.getAllTours = (req, res) => {
 // READ/LIST A TOUR BASED ON ID
 exports.getTour = (req, res) => {
   const id = req.params.id * 1;
-  const tour = tours.find(el => el.id === id);
+  const tour = tours.find((el) => el.id === id);
 
   res.status(200).json({
     status: 'success',
@@ -68,13 +68,15 @@ exports.getTour = (req, res) => {
 // CREATE A TOUR
 exports.createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
+  // eslint-disable-next-line prefer-object-spread
   const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
   fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
-    err => {
-        console.log('file write success')
+    // eslint-disable-next-line no-unused-vars
+    (err) => {
+      console.log('file write success');
       res.status(200).json({
         status: 'success',
         data: {
