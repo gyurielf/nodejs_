@@ -1,6 +1,6 @@
-const fs = require('fs');
-
+const Tour = require('../models/tourModel');
 // FILE READ AND JSON PARSE
+/* 
 const tours = JSON.parse(
   fs.readFileSync(
     `${__dirname}/../dev-data/data/tours-simple.json`,
@@ -10,9 +10,10 @@ const tours = JSON.parse(
       return data;
     }
   )
-);
+); 
+*/
 
-exports.checkID = (req, res, next, val) => {
+/* exports.checkID = (req, res, next, val) => {
   console.log(`This id is :${val}`);
   if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
@@ -23,8 +24,9 @@ exports.checkID = (req, res, next, val) => {
     });
   }
   next();
-};
+}; */
 
+/* MIDDLEWARE WORKS
 exports.checkBody = (req, res, next) => {
   // console.log(`This value is :${val}`);
   if (!req.body.name || req.body.name.length === 0 || !req.body.price) {
@@ -37,37 +39,84 @@ exports.checkBody = (req, res, next) => {
     });
   }
   next();
-};
+}; 
+*/
 
 // READ/LIST ALL TOURS
-exports.getAllTours = (req, res) => {
-  console.log(req.requestTime);
-  res.status(200).json({
-    status: 'success',
-    requestDate: req.requestTime,
-    results: tours.length,
-    data: {
-      tours
-    }
-  });
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find();
+    res.status(200).json({
+      status: 'success',
+      requestDate: req.requestTime,
+      results: tours.length,
+      data: {
+        tours
+      }
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'Fail',
+      message: err
+    });
+  }
 };
 
 // READ/LIST A TOUR BASED ON ID
-exports.getTour = (req, res) => {
-  const id = req.params.id * 1;
-  const tour = tours.find((el) => el.id === id);
+exports.getTour = async (req, res) => {
+  // const id = req.params.id * 1;
+  // const tour = tours.find((el) => el.id === id);
+  // res.status(200).json({
+  //   status: 'success',
+  //   data: {
+  //     tours: tour
+  //   }
+  // });
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tours: tour
-    }
-  });
+  try {
+    const tour = await Tour.findById(req.params.id);
+    // The above code is shorthand version of this: Tour.findOne({ _id: req.params.id })
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tours: tour
+      }
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'Fail',
+      message: err
+    });
+  }
 };
 
 // CREATE A TOUR
-exports.createTour = (req, res) => {
-  const newId = tours[tours.length - 1].id + 1;
+exports.createTour = async (req, res) => {
+  // Az alábbi verzió ugyan azt csinálja, de még az első az új változón hívja meg a methodot, addig a másodikon pedig direktben a Tour-on hívódik meg.
+  // #v1
+  // const newTour = new Tour({});
+  // newTour.save();
+  // #v2
+  // Tour.create({});
+
+  try {
+    const newTour = await Tour.create(req.body);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour: newTour
+      }
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'Fail',
+      message: err
+    });
+  }
+
+  /* const newId = tours[tours.length - 1].id + 1;
   // eslint-disable-next-line prefer-object-spread
   const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
@@ -84,24 +133,43 @@ exports.createTour = (req, res) => {
         }
       });
     }
-  );
+  ); */
 };
 
 // UPDATE A TOUR BASED ON ID
-exports.updateTour = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: '<updatedTour>'
-    }
-  });
+exports.updateTour = async (req, res) => {
+  try {
+    const tourObj = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour: tourObj
+      }
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'Fail',
+      message: err
+    });
+  }
 };
 
 // DELETE A TOUR BASED ON ID
-exports.deleteTour = (req, res) => {
+exports.deleteTour = async (req, res) => {
   // 204 status = NO CONTENT; usually dont send data back.
-  res.status(204).json({
-    status: 'success',
-    data: null
-  });
+  try {
+    await Tour.findByIdAndDelete(req.params.id);
+    res.status(204).json({
+      status: 'success',
+      data: null
+    });
+  } catch (err) {
+    res.status(406).json({
+      status: 'Error',
+      data: err
+    });
+  }
 };

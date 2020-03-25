@@ -7,15 +7,15 @@ const {
   createTour,
   getTour,
   updateTour,
-  deleteTour,
-  checkID,
-  checkBody
+  deleteTour
+  // checkID,
+  // checkBody
 } = require('../controllers/tourController');
 
 const router = express.Router();
 
 // This val param is hold the id param value in order to get acces to that id
-router.param('id', checkID);
+// router.param('id', checkID);
 // router.param('', checkBody);
 
 // Create a checkbody middleware
@@ -23,7 +23,7 @@ router.param('id', checkID);
 // if not return 400(bad request);
 // Add it to the post handler stack.
 
-router.route('/').get(getAllTours).post(checkBody, createTour);
+router.route('/').get(getAllTours).post(createTour);
 
 router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
