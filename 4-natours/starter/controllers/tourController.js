@@ -1,51 +1,43 @@
 const Tour = require('../models/tourModel');
-// FILE READ AND JSON PARSE
-/* 
-const tours = JSON.parse(
-  fs.readFileSync(
-    `${__dirname}/../dev-data/data/tours-simple.json`,
-    'utf-8',
-    (err, data) => {
-      if (err) return console.log(`ERROR, file doesn't exist or empty.`);
-      return data;
-    }
-  )
-); 
-*/
-
-/* exports.checkID = (req, res, next, val) => {
-  console.log(`This id is :${val}`);
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'Error',
-      data: {
-        tour: 'Invalid ID'
-      }
-    });
-  }
-  next();
-}; */
-
-/* MIDDLEWARE WORKS
-exports.checkBody = (req, res, next) => {
-  // console.log(`This value is :${val}`);
-  if (!req.body.name || req.body.name.length === 0 || !req.body.price) {
-    console.log('Error catched!');
-    return res.status(404).json({
-      status: 'Error',
-      data: {
-        tour: `Missing NAME and / or PRICE parameter`
-      }
-    });
-  }
-  next();
-}; 
-*/
 
 // READ/LIST ALL TOURS
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    console.log(req.query);
+    
+    // BUILD QUERY
+    // 1-a) Filtering
+
+    // A queryt szétszedem részekre @queryObj
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    // console.log(req.query, queryObj);
+
+    // 1-b) ADVANCED FILTERING
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    console.log(JSON.parse(queryStr));
+
+    // gte,gt,lt,lte
+    // { diffuculty: easy, duration: {$gte: 5} }
+    // { duration: { gte: '5' }, difficulty: 'easy' }
+
+    // query filter handling
+    const query = Tour.find(JSON.parse(queryStr));
+
+    // QUERY FILTER HANDLING - with Mongoose
+    // const query = Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    // EXECUTE QUERY
+    const tours = await query;
+
     res.status(200).json({
       status: 'success',
       requestDate: req.requestTime,
@@ -63,6 +55,7 @@ exports.getAllTours = async (req, res) => {
 };
 
 // READ/LIST A TOUR BASED ON ID
+
 exports.getTour = async (req, res) => {
   // const id = req.params.id * 1;
   // const tour = tours.find((el) => el.id === id);
