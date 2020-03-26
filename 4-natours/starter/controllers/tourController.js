@@ -3,7 +3,7 @@ const Tour = require('../models/tourModel');
 // READ/LIST ALL TOURS
 exports.getAllTours = async (req, res) => {
   try {
-    console.log(req.query);
+    // console.log(req.query);
 
     // BUILD QUERY
     // 1-a) Filtering
@@ -19,7 +19,7 @@ exports.getAllTours = async (req, res) => {
     // 1-b) ADVANCED FILTERING
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    console.log(JSON.parse(queryStr));
+    // console.log(JSON.parse(queryStr));
 
     // gte,gt,lt,lte
     // { diffuculty: easy, duration: {$gte: 5} }
@@ -40,6 +40,8 @@ exports.getAllTours = async (req, res) => {
       const sortBy = req.query.sort.split(',').join(' ');
       console.log(sortBy);
       query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
     }
 
     // EXECUTE QUERY
