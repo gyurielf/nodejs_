@@ -4,7 +4,7 @@ const Tour = require('../models/tourModel');
 exports.getAllTours = async (req, res) => {
   try {
     console.log(req.query);
-    
+
     // BUILD QUERY
     // 1-a) Filtering
 
@@ -26,7 +26,7 @@ exports.getAllTours = async (req, res) => {
     // { duration: { gte: '5' }, difficulty: 'easy' }
 
     // query filter handling
-    const query = Tour.find(JSON.parse(queryStr));
+    let query = Tour.find(JSON.parse(queryStr));
 
     // QUERY FILTER HANDLING - with Mongoose
     // const query = Tour.find()
@@ -34,6 +34,13 @@ exports.getAllTours = async (req, res) => {
     //   .equals(5)
     //   .where('difficulty')
     //   .equals('easy');
+
+    // 2) SORTING
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      console.log(sortBy);
+      query = query.sort(sortBy);
+    }
 
     // EXECUTE QUERY
     const tours = await query;
