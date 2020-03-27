@@ -8,6 +8,69 @@ exports.aliasTopTours = async (req, res, next) => {
   next();
 };
 
+class APIFeatures {
+  constructor(query, queryString) {
+    this.query = query;
+    this.queryString = queryString;
+  }
+
+  advancedFilter() {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const queryObj = { ...this.queryString };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    // 1-b) ADVANCED FILTERING
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+    this.query = this.query.find(JSON.parse(queryStr));
+    // let query = Tour.find(JSON.parse(queryStr));
+    return this;
+  }
+
+  sort() {
+    // 2) SORTING
+    if (this.queryString.sort) {
+      const sortBy = this.queryString.sort.split(',').join(' ');
+      // console.log(sortBy);
+      this.query = this.query.sort(sortBy);
+    } else {
+      this.query = this.query.sort('-createdAt');
+    }
+    return this;
+  }
+
+  limitFields() {
+    // 3) FIELD LIMITING
+    if (this.queryString.fields) {
+      let fieldsObj = JSON.stringify(this.queryString.fields);
+      fieldsObj = JSON.parse(fieldsObj.split(',').join(' '));
+      this.query = this.query.select(`${fieldsObj}`);
+      console.log(fieldsObj);
+    } else {
+      this.query = this.query.select('-__v');
+    }
+    return this;
+  }
+
+  paginate() {
+    // 4) PAGINATION
+    const page = this.queryString.page * 1 || 1;
+    const limit = this.queryString.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+
+    this.query = this.query.skip(skip).limit(limit);
+
+    // if (this.queryString.page) {
+    //   const numTours = await Tour.countDocuments();
+    //   if (skip > numTours) throw new Error('This page does not exist');
+    // }
+
+    return this;
+  }
+}
+
 // READ/LIST ALL TOURS
 exports.getAllTours = async (req, res) => {
   try {
@@ -18,15 +81,15 @@ exports.getAllTours = async (req, res) => {
 
     // A queryt szétszedem részekre @queryObj
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const queryObj = { ...req.query };
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach((el) => delete queryObj[el]);
+    ////const queryObj = { ...req.query };
+    ////const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    ////excludedFields.forEach((el) => delete queryObj[el]);
 
     // console.log(req.query, queryObj);
 
     // 1-b) ADVANCED FILTERING
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    ////let queryStr = JSON.stringify(queryObj);
+    ////queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     // console.log(JSON.parse(queryStr));
 
     // gte,gt,lt,lte
@@ -34,7 +97,7 @@ exports.getAllTours = async (req, res) => {
     // { duration: { gte: '5' }, difficulty: 'easy' }
 
     // query filter handling
-    let query = Tour.find(JSON.parse(queryStr));
+    ////let query = Tour.find(JSON.parse(queryStr));
 
     // QUERY FILTER HANDLING - with Mongoose
     // const query = Tour.find()
@@ -43,43 +106,49 @@ exports.getAllTours = async (req, res) => {
     //   .where('difficulty')
     //   .equals('easy');
 
-    // 2) SORTING
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ');
-      // console.log(sortBy);
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort('-createdAt');
-    }
+    //// 2) SORTING
+    //// if (req.query.sort) {
+    ////   const sortBy = req.query.sort.split(',').join(' ');
+    ////   // console.log(sortBy);
+    ////   query = query.sort(sortBy);
+    //// } else {
+    ////   query = query.sort('-createdAt');
+    //// }
 
     //  3) FIELD LIMITING
-    if (req.query.fields) {
-      // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-      // const fields = x;
-      // query = query.select('name duration price');
-      // console.log(req.query.fields);
-      let fieldsObj = JSON.stringify(req.query.fields);
-      fieldsObj = JSON.parse(fieldsObj.split(',').join(' '));
-      query = query.select(`${fieldsObj}`);
-      console.log(fieldsObj);
-    } else {
-      query = query.select('-__v');
-    }
+    //// if (req.query.fields) {
+    ////   // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    ////   // const fields = x;
+    ////   // query = query.select('name duration price');
+    ////   // console.log(req.query.fields);
+    ////   let fieldsObj = JSON.stringify(req.query.fields);
+    ////   fieldsObj = JSON.parse(fieldsObj.split(',').join(' '));
+    ////   query = query.select(`${fieldsObj}`);
+    ////   console.log(fieldsObj);
+    //// } else {
+    ////   query = query.select('-__v');
+    //// }
 
     // 4) PAGINATION
     // ?page=2&limit=10 ## (page 0, 1-10), (page 1, 11-20), (page 2, 21-30)
     // trick for convert value to number is * 1, the default value just || 100
-    const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 100;
-    const skip = (page - 1) * limit;
-    query = query.skip(skip).limit(limit);
+    ////const page = req.query.page * 1 || 1;
+    ////const limit = req.query.limit * 1 || 100;
+    ////const skip = (page - 1) * limit;
+    ////query = query.skip(skip).limit(limit);
+    ////
+    ////if (req.query.page) {
+    ////  const numTours = await Tour.countDocuments();
+    ////  if (skip > numTours) throw new Error('This page does not exist');
+    ////}
 
-    if (req.query.page) {
-      const numTours = await Tour.countDocuments();
-      if (skip > numTours) throw new Error('This page does not exist');
-    }
     // EXECUTE QUERY
-    const tours = await query;
+    const features = new APIFeatures(Tour.find(), req.query)
+      .advancedFilter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const tours = await features.query;
 
     res.status(200).json({
       status: 'success',
