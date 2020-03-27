@@ -38,12 +38,38 @@ exports.getAllTours = async (req, res) => {
     // 2) SORTING
     if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' ');
-      console.log(sortBy);
+      // console.log(sortBy);
       query = query.sort(sortBy);
     } else {
       query = query.sort('-createdAt');
     }
 
+    //  3) FIELD LIMITING
+    if (req.query.fields) {
+      // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+      // const fields = x;
+      // query = query.select('name duration price');
+      // console.log(req.query.fields);
+      let fieldsObj = JSON.stringify(req.query.fields);
+      fieldsObj = JSON.parse(fieldsObj.split(',').join(' '));
+      query = query.select(`${fieldsObj}`);
+      console.log(fieldsObj);
+    } else {
+      query = query.select('-__v');
+    }
+
+    // 4) PAGINATION
+    // ?page=2&limit=10 ## (page 0, 1-10), (page 1, 11-20), (page 2, 21-30)
+    // trick for convert value to number is * 1, the default value just || 100
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip > numTours) throw new Error('This page does not exist');
+    }
     // EXECUTE QUERY
     const tours = await query;
 
@@ -101,7 +127,7 @@ exports.createTour = async (req, res) => {
   // newTour.save();
   // #v2
   // Tour.create({});
-
+  // Tour.create({});
   try {
     const newTour = await Tour.create(req.body);
 
@@ -135,7 +161,8 @@ exports.createTour = async (req, res) => {
         }
       });
     }
-  ); */
+  ); 
+  */
 };
 
 // UPDATE A TOUR BASED ON ID
@@ -172,6 +199,29 @@ exports.deleteTour = async (req, res) => {
     res.status(406).json({
       status: 'Error',
       data: err
+    });
+  }
+};
+
+// Aliasing
+exports.topFiveCheap = async (req, res) => {
+  try {
+    const tours = await Tour.find()
+      .sort({ ratingsAverage: -1, price: 1 })
+      .limit(5)
+      .select('name price ratingsAverage');
+    res.status(200).json({
+      status: 'success',
+      requestDate: req.requestTime,
+      results: tours.length,
+      data: {
+        tours
+      }
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'Fail',
+      message: err
     });
   }
 };
