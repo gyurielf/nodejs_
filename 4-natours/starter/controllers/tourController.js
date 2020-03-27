@@ -1,5 +1,13 @@
 const Tour = require('../models/tourModel');
 
+// Aliasing -- PREFILLING QUERY PARTS OF THE REQUEST
+exports.aliasTopTours = async (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage, price';
+  req.query.fields = 'name, price, ratingsAverage, summary, difficulty';
+  next();
+};
+
 // READ/LIST ALL TOURS
 exports.getAllTours = async (req, res) => {
   try {
@@ -199,29 +207,6 @@ exports.deleteTour = async (req, res) => {
     res.status(406).json({
       status: 'Error',
       data: err
-    });
-  }
-};
-
-// Aliasing
-exports.topFiveCheap = async (req, res) => {
-  try {
-    const tours = await Tour.find()
-      .sort({ ratingsAverage: -1, price: 1 })
-      .limit(5)
-      .select('name price ratingsAverage');
-    res.status(200).json({
-      status: 'success',
-      requestDate: req.requestTime,
-      results: tours.length,
-      data: {
-        tours
-      }
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'Fail',
-      message: err
     });
   }
 };
