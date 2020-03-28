@@ -8,7 +8,8 @@ const {
   getTour,
   updateTour,
   deleteTour,
-  aliasTopTours
+  aliasTopTours,
+  getTourStats
 } = require('../controllers/tourController');
 
 const router = express.Router();
@@ -22,6 +23,8 @@ const router = express.Router();
 // if not return 400(bad request);
 // Add it to the post handler stack.
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
+
+router.route('/stats').get(getTourStats);
 
 router.route('/').get(getAllTours).post(createTour);
 
