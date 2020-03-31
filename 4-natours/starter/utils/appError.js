@@ -1,9 +1,8 @@
-/** 
-*   Az expressnél használatos, két bejövő adata van, ebből az egyiket az express dolgozza fel:
-* message, a másik a statusCode, amiből eldöntöm, hogy mi lesz a response statusza ( status)
-* jelen esetben eldöntöm, hogy ha 4-el kezdődik, akkor fail, ha nem akkor error.
-*
-**/
+/**
+ *   Az expressnél használatos, két bejövő adata van, ebből az egyiket az express dolgozza fel:
+ * message, a másik a statusCode, amiből eldöntöm, hogy mi lesz a response statusza ( status)
+ * jelen esetben eldöntöm, hogy ha 4-el kezdődik, akkor fail, ha nem akkor error.
+ **/
 
 class AppError extends Error {
   constructor(message, statusCode) {
