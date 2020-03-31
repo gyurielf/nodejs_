@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
+const catchAsync = require('../utils/catchAsync');
 
 // Aliasing -- PREFILLING QUERY PARTS OF THE REQUEST
 exports.aliasTopTours = async (req, res, next) => {
@@ -139,8 +140,19 @@ exports.getTour = async (req, res) => {
   }
 };
 
+
+
 // CREATE A TOUR
-exports.createTour = async (req, res) => {
+exports.createTour = catchAsync(async (req, res, next) => {
+  const newTour = await Tour.create(req.body);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: newTour
+    }
+  });
+
   // Az alábbi verzió ugyan azt csinálja, de még az első az új változón hívja meg a methodot, addig a másodikon pedig direktben a Tour-on hívódik meg.
   // #v1
   // const newTour = new Tour({});
@@ -148,7 +160,7 @@ exports.createTour = async (req, res) => {
   // #v2
   // Tour.create({});
   // Tour.create({});
-  try {
+  /* try {
     const newTour = await Tour.create(req.body);
 
     res.status(200).json({
@@ -161,8 +173,8 @@ exports.createTour = async (req, res) => {
     res.status(400).json({
       status: 'Fail',
       message: err
-    });
-  }
+    }); 
+  }*/
 
   /* const newId = tours[tours.length - 1].id + 1;
   // eslint-disable-next-line prefer-object-spread
@@ -183,7 +195,7 @@ exports.createTour = async (req, res) => {
     }
   ); 
   */
-};
+});
 
 // UPDATE A TOUR BASED ON ID
 exports.updateTour = async (req, res) => {

@@ -1,4 +1,5 @@
 // ERROR HANDLER MIDDLEWARE - Express automaticaly know if 4 argument added, that is an error handler middleware.
+// Global error handler middleware
 module.exports = (err, req, res, next) => {
   //   console.log(err.stack);
 
