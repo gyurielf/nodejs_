@@ -229,13 +229,24 @@ exports.getTourStats = async (req, res) => {
       { $match: { ratingsAverage: { $gte: 4.5 } } },
       {
         $group: {
-          _id: null,
+          // null - nem groupolok egy fieldre sem ill mezőre.
+          // _id: null,
+          _id: { $toUpper: '$difficulty' },
           numTours: { $sum: 1 },
           avgRating: { $avg: '$ratingsAverage' },
           numRatings: { $sum: '$ratingsQuantity' },
           avgPrice: { $avg: '$price' },
           minPrice: { $min: '$price' },
           maxPrice: { $max: '$price' }
+        }
+      },
+      {
+        $sort: { avgPrice: 1, numRatings: -1 }
+      },
+      {
+        // NOT EQUAL -- KIVESZI A TALALATOK KOZUL.
+        $match: {
+          _id: { $ne: 'EASY' }
         }
       }
     ]);
@@ -244,6 +255,75 @@ exports.getTourStats = async (req, res) => {
       status: 'success',
       data: {
         tour: stats
+      }
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'Fail',
+      message: err
+    });
+  }
+};
+
+// REAL BUSINESS PROBLEM -- TÖMB KEZELÉS- UNWINDING and PROJECTING
+// Azokat jelenítem meg, ami 2021 es évben voltak és
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1; // 2021
+    const plan = await Tour.aggregate([
+      {
+        // if the document has an array, we can clone the document other parts for each arra  element -- date in this case
+        $unwind: '$startDates'
+      },
+      {
+        // Select stage
+        $match: {
+          // tours between yyyy-01-01 & yyyy-12-31
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`)
+          }
+        }
+      },
+      {
+        // group stage
+        $group: {
+          // group by month -- Months located in the startDates "column"
+          _id: { $month: '$startDates' },
+          // Count tours in a month
+          numTourStarts: { $sum: 1 },
+          // Tour names push into array and show in the response.
+          tours: { $push: '$name' }
+        }
+      },
+      {
+        // add an extra fields as month and set to value equal with _id
+        $addFields: { month: '$_id' }
+      },
+      {
+        // Show or hide elements // columns
+        $project: {
+          _id: 0
+        }
+      },
+      {
+        // Sorting desc based on the tour quentity
+        $sort: {
+          numTourStarts: -1
+        }
+      },
+      {
+        // limit the number of results.
+        $limit: 6
+      }
+    ]);
+    console.log(plan);
+    console.log(year);
+    res.status(200).json({
+      status: 'success',
+      results: plan.length,
+      data: {
+        tour: plan
       }
     });
   } catch (err) {

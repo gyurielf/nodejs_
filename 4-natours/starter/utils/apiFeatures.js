@@ -22,7 +22,7 @@ class APIFeatures {
   sort() {
     // 2) SORTING
     if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(',').join(' ');
+      const sortBy = this.queryString.sort.split(',').join('');
       // console.log(sortBy);
       this.query = this.query.sort(sortBy);
     } else {
@@ -34,10 +34,9 @@ class APIFeatures {
   limitFields() {
     // 3) FIELD LIMITING
     if (this.queryString.fields) {
-      let fieldsObj = JSON.stringify(this.queryString.fields);
-      fieldsObj = JSON.parse(fieldsObj.split(',').join(' '));
-      this.query = this.query.select(`${fieldsObj}`);
-      console.log(fieldsObj);
+      const fields = this.queryString.fields.split(',').join(' ');
+      this.query = this.query.select(fields);
+      // console.log(fields);
     } else {
       this.query = this.query.select('-__v');
     }

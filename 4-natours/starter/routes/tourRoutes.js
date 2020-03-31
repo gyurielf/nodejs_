@@ -9,7 +9,8 @@ const {
   updateTour,
   deleteTour,
   aliasTopTours,
-  getTourStats
+  getTourStats,
+  getMonthlyPlan
 } = require('../controllers/tourController');
 
 const router = express.Router();
@@ -22,7 +23,10 @@ const router = express.Router();
 // Check if body contains the name and the price property
 // if not return 400(bad request);
 // Add it to the post handler stack.
+
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
+
+router.route('/monthly-plan/:year').get(getMonthlyPlan);
 
 router.route('/stats').get(getTourStats);
 
