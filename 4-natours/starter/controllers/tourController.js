@@ -117,8 +117,6 @@ exports.getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-
-
 // CREATE A TOUR
 exports.createTour = catchAsync(async (req, res, next) => {
   const newTour = await Tour.create(req.body);
