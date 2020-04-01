@@ -1,7 +1,7 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
-
+const AppError = require('../utils/appError');
 // Aliasing -- PREFILLING QUERY PARTS OF THE REQUEST
 exports.aliasTopTours = async (req, res, next) => {
   req.query.limit = '5';
@@ -109,6 +109,10 @@ exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
   // The above code is shorthand version of this: Tour.findOne({ _id: req.params.id })
 
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -178,6 +182,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
     new: true,
     runValidators: true
   });
+
+  if (!tourObj) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -189,7 +198,12 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 // DELETE A TOUR BASED ON ID
 exports.deleteTour = catchAsync(async (req, res, next) => {
   // 204 status = NO CONTENT; usually dont send data back.
-  await Tour.findByIdAndDelete(req.params.id);
+  const deletedTour = await Tour.findByIdAndDelete(req.params.id);
+
+  if (!deletedTour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
   res.status(204).json({
     status: 'success',
     data: null

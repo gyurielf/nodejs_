@@ -52,7 +52,7 @@ app.all('*', (req, res, next) => {
   err.status = 'fail';
   err.statusCode = 404; */
 
-  // AppError(err.message, err.statusCode); EZZEL LÉP TOVÁBB A GLOBAL ERROR HANDLERHEZ, 
+  // AppError(err.message, err.statusCode); EZZEL LÉP TOVÁBB A GLOBAL ERROR HANDLERHEZ,
   // AMI A MASSAGE ÉS A STATUSCODE ALAPJÁN ADJA VISSZA A HIBÁT/ANNAK JELLEGÉT/FORRÁSÁT
   next(new AppError(`Cant find ${req.originalUrl} on this server!`), 404);
 });
