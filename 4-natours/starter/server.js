@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
+//122. viceo -- SYNC --
+process.on('uncaughtException', (err) => {
+  console.log('UNCAUGHT EXCEPTION! Shutting down...');
+  console.log(err.name, err.message);
+  process.exit(1);
+});
+
 dotenv.config({ path: './config.env' });
 const app = require('./app');
 
@@ -13,16 +20,29 @@ mongoose
   .connect(DB, {
     useNewUrlParser: true,
     useCreateIndex: true,
-    userFindAndModify: false,
+    // userFindAndModify: false,
     useUnifiedTopology: true
   })
   .then(() => console.log('DB Connection successful!'));
+// unhandled rejections error handlin >> way 1 - not complicated app
+// .catch((err) => console.log('DB Connection failed.'));
 
 console.log(process.env.NODE_ENV);
 // SERVER
 // Port from Environment variables process - config.env file, OR 3000.
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App running on port ${port}`);
+});
+
+// 121. video -- ASYNC
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  console.log('UNHANDLED REJECTION! Shutting down...');
+  // Gracefully shutdown before process exit.
+  server.close(() => {
+    // 1 = uncaught exception, 0 = success
+    process.exit(1);
+  });
 });
