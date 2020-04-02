@@ -3,9 +3,9 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
-// 
-const signToken = (userID) => {
-  return jwt.sign({ id: userID }, process.env.JWT_SECRET, {
+// 129. video 23:00
+const signToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
@@ -56,7 +56,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // 3) If everything ok, send token to client
 
-  const token = '';
+  const token = signToken(user._id);
   res.status(200).json({
     status: 'success',
     token
