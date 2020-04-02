@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -25,33 +26,49 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: [4, 'The password should be more than 4 characters.'],
     maxlength: [250, 'The password should be less than 250 characters.'],
-    required: [true, 'The user must have an email address']
+    required: [true, 'The user must have an email address'],
+    // select -- PREFILLINGnever show up from any output.
+    select: false
   },
   passwordConfirm: {
     type: String,
     minlength: [4, 'The password should be more than 4 characters.'],
     maxlength: [250, 'The password should be less than 250 characters.'],
     validate: {
-      function(val) {
-        return val === this.password;
+      // Hagyományos function kell, nem arrow, mert használnunk kell a this keywordot.
+      //   this only woks on SAVE!!!!
+      validator: function (el) {
+        return el === this.password;
       },
       message: () => `The passowrd confirm should be same as the password`
     },
     required: [true, 'Must have confirm the email']
   }
 });
-// Adding dates for the find queries.
-userSchema.pre(/^find/, function (next) {
-  this.start = Date.now();
+
+userSchema.pre('save', async function (next) {
+  // only run this fn if the password was actually modified;
+  if (!this.isModified('password')) return next();
+  // hash password
+  this.password = await bcrypt.hash(this.password, 12);
+
+  /* passwordConfirm - Not need in the database, just we have to ensure about the user give it the correct password, what he want. */
+  this.passwordConfirm = undefined;
   next();
 });
 
-// Exclude users who doenst have photo.
+/* // Adding dates for the find queries.
+userSchema.pre(/^find/, function (next) {
+  this.start = Date.now();
+  next();
+}); */
+
+/* // Exclude users who doenst have photo.
 userSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { photo: { $lt: 1 } } });
   // console.log(this.pipeline());
   next();
-});
+}); */
 
 const User = mongoose.model('User', userSchema);
 
