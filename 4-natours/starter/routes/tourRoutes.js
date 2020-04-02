@@ -13,6 +13,8 @@ const {
   getMonthlyPlan
 } = require('../controllers/tourController');
 
+const { protect } = require('../controllers/authController');
+
 const router = express.Router();
 
 // This val param is hold the id param value in order to get acces to that id
@@ -25,12 +27,10 @@ const router = express.Router();
 // Add it to the post handler stack.
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
-
 router.route('/monthly-plan/:year').get(getMonthlyPlan);
-
 router.route('/stats').get(getTourStats);
 
-router.route('/').get(getAllTours).post(createTour);
+router.route('/').get(protect, getAllTours).post(createTour);
 
 router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
