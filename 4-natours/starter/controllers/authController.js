@@ -23,6 +23,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt
+    // user can not set role for yourself
+    // role: req.body.role
   });
 
   const token = signToken(newUser._id);
@@ -102,3 +104,42 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// Using rest params (ES6), which create an array of all arguments that were sepecified.
+exports.restrictTo = (...roles) => {
+  // Return a new FN, which is the middleware itself
+  return (req, res, next) => {
+    // roles ['admin', 'lead-guide']. role='user
+    // IF the current user role not in this array ['admin', 'lead-guide'] (which comes from tour routes), return next error in here.
+    if (!roles.includes(req.user.role)) {
+      // req.user.role NOT in the roles array ? IF TRUE > ERR > IF FALSE > NEXT
+      // Determines whether an array includes a certain element, returning true or false as appropriate
+
+      return next(
+        new AppError('You do not have permission to access this route.', 403)
+      );
+    }
+
+    next();
+  };
+};
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1) Get user based on POSTed email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    // return next(new AppError('There is no no user with email address.'), 404);
+    return next(new AppError('There is no user with email address.', 404));
+  }
+
+  // 2) Generate the random token and
+  const resetToken = user.createPasswordResetToken();
+  /** We must save the token and the pw change time to the database. BUT we have to skip the validation, for this save. otherwise, we must confirm our password
+   * and actualy we forgot this password, thats why we want to reset it.
+   **/
+  await user.save({ validateBeforeSave: false });
+  // 3) Send it back tu user's email.
+  
+});
+
+exports.resetPassword = (req, res, next) => {};
