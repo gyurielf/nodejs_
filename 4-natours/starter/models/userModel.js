@@ -43,7 +43,8 @@ const userSchema = new mongoose.Schema({
       message: () => `The passowrd confirm should be same as the password`
     },
     required: [true, 'Must have confirm the email']
-  }
+  },
+  passwordChangedAt: Date
 });
 
 userSchema.pre('save', async function (next) {
@@ -62,6 +63,26 @@ userSchema.methods.correctPassword = async function (
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+/**
+ * If the token is create time is less than the password changed time, then the password is not valid.
+ * Token issued time: 100 < passworc changed at 200 (= TRUE)
+ * if we change the password after the token was issued, therefore the token this is now true!
+ * if the Token issued time: 300 < passworc changed at 200 (= FALSE)
+ * The token contain the previous password, therefore its gonna be false.
+ ******  False means NOT CHANGED ---  True means CHANGED
+ */
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const passwordChangedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    // console.log(passwordChangedTimestamp, JWTTimestamp);
+    return JWTTimestamp < passwordChangedTimestamp;
+  }
+  return false;
 };
 
 /* // Adding dates for the find queries.
