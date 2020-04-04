@@ -13,7 +13,9 @@ const {
 const {
   signup,
   login,
-  forgotPassword
+  forgotPassword,
+  resetPassword,
+  updatePassword
 } = require('../controllers/authController');
 
 // Express router import.
@@ -27,10 +29,15 @@ router.post('/signup', signup);
 router.post('/login', login);
 
 router.post('/forgotPassword', forgotPassword);
-// router.post('/resetPassword', resetPassword);
+router.patch('/resetPassword/:token', resetPassword);
 
 router.route('/').get(getAllUsers).post(createUser);
-router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+router
+  .route('/:id')
+  .get(getUser)
+  .post(updatePassword)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 // EXPORT MODULE
 module.exports = router;
