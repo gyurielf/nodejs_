@@ -20,10 +20,10 @@ mongoose
   .connect(DB, {
     useNewUrlParser: true,
     useCreateIndex: true,
-    // userFindAndModify: false,
+    useFindAndModify: false,
     useUnifiedTopology: true
   })
-  .then(() => console.log('DB Connection successful!'));
+  .then(() => console.log('Database connection successful'));
 // unhandled rejections error handlin >> way 1 - not complicated app
 // .catch((err) => console.log('DB Connection failed.'));
 
@@ -40,7 +40,7 @@ const server = app.listen(port, () => {
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
   console.log('UNHANDLED REJECTION! Shutting down...');
-  console.log(err);
+  // console.log(err);
   // Gracefully shutdown before process exit.
   server.close(() => {
     // 1 = uncaught exception, 0 = success

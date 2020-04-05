@@ -55,7 +55,12 @@ const userSchema = new mongoose.Schema({
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
-  passwordResetExpires: Date
+  passwordResetExpires: Date,
+  isActive: {
+    type: Boolean,
+    default: true,
+    select: false // Hidden from queries, this will not be in the output.
+  }
 });
 
 userSchema.pre('save', async function (next) {
@@ -73,8 +78,15 @@ userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 100;
-  console.log('passwordChangedAt date added');
+  // console.log('passwordChangedAt date added');
 
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  // this point to the current query.
+  // at the end, only find the documents with ACTIVE: TRUE property.
+  this.find({ isActive: { $ne: false } });
   next();
 });
 
@@ -91,8 +103,8 @@ userSchema.methods.correctPassword = async function (
  * if we change the password after the token was issued, therefore the token this is now true!
  * if the Token issued time: 300 < passworc changed at 200 (= FALSE)
  * The token contain the previous password, therefore its gonna be false.
- ******  False means NOT CHANGED ---  True means CHANGED
- */
+ * False means NOT CHANGED ---  True means CHANGED
+ **/
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const passwordChangedTimestamp = parseInt(
