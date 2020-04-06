@@ -1,5 +1,11 @@
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xssDefend = require('xss-clean');
+const hpp = require('hpp');
+
 const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -9,26 +15,80 @@ const app = express();
 
 app.disable('x-powered-by');
 
-// ###### 1) MIDDLEWARES
+// ###### 1) GLOBAL MIDDLEWARES
 // If we dont use the next at the and, the req res cycle will be stuck.
 
-// console.log(process.env.NODE_ENV);
+/**
+ * Set security HTTP headers
+ * USE HELMET - PUT IT RIGHT IN THE BEGGINING. FOR SURE
+ * **/
+
+app.use(helmet());
+
+/**
+ * Development logging
+ * IF the running environment is DEV, thats the morgan running and logging in dev mode.
+ * **/
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use(express.json());
+// RATE LIMITER
+const limiter = rateLimit({
+  max: 100,
+  window: 60 * 60 * 1000, // 60*60*1000 = 1 hour
+  message: 'Too many requests from this IP, please try again in an hour!'
+});
+app.use('/api', limiter);
 
-// Works like a root folder
+/**
+ * BODY PARSER, reading data from body into req.body
+ * LIMIT the maximum amount data what we want to receive in a package: { limit: '10kb' }
+ * **/
+app.use(express.json({ limit: '10kb' }));
+
+/**
+ * DATA SANITIZATION against NoSQL query injection
+ **/
+app.use(mongoSanitize());
+
+/**
+ * DATA SANITIZATION against XSS attacks
+ **/
+app.use(xssDefend());
+
+/**
+ * PREVENT PARAMETER POLLUTION - Clean up the query string.
+ **/
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price'
+    ]
+  })
+);
+
+/**
+ * Serving static files
+ * Works like a root folder
+ * **/
 app.use(express.static(`${__dirname}/public`));
 
-/* 
+/**
 app.use((req, res, next) => {
   console.log('Hello from the middleware!');
   next();
 }); 
-*/
+**/
 
+/**
+ * Test middleware, sometimes useful.
+ *  **/
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   // console.log(req.headers);

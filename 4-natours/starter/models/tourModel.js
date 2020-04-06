@@ -86,10 +86,16 @@ const tourSchema = new mongoose.Schema(
     secretTour: {
       type: Boolean,
       default: false
+    },
+    locations: {
+      type: GeoLocation
     }
   },
   {
-    // Ezeket hozza kell adni a mongoose-schema obj-hez, hogy az outputba bekeruljenek a virtual propertik.
+    /**
+     * Must be set to mongoose scheme object, that the virtual properties could be appear.
+     * Ezeket hozza kell adni a mongoose schema obj-hez, hogy az outputba bekeruljenek a virtual propertik.
+     **/
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
   }

@@ -15,12 +15,30 @@ const signToken = (id) => {
 
 /**
  * Create and send JWT token & http code & user data.
+ * send JWT token as cookie.
  * @param user Current user (we would look user._id after)
  * @param statusCode HTTP status code
  * @param res The res object is available everywhere! Not need to create the variable.
  */
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
+  //////// Cookie settings and options.
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    secure: false,
+    httpOnly: true
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  // Hide the password from the output. [WE NOT USE user.save(), so it doesnt change any at our DB]
+  user.password = undefined;
+
+  // Stay same as before.
   res.status(statusCode).json({
     status: 'success',
     token,
