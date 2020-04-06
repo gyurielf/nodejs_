@@ -8,14 +8,12 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have a name'],
       unique: true,
-      trim: true, // remove whitespaces before and after of the string.
-      maxlength: [50, 'A tour name must have less or equal then 40 characters'],
-      minlength: [5, 'A tour name must have more or equal then 5 characters'],
-      validate: [validator.isAlpha, 'Tour name must only contain characters']
+      trim: true,
+      maxlength: [40, 'A tour name must have less or equal then 40 characters'],
+      minlength: [10, 'A tour name must have more or equal then 10 characters']
+      // validate: [validator.isAlpha, 'Tour name must only contain characters']
     },
-    slug: {
-      type: String
-    },
+    slug: String,
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration']
@@ -26,26 +24,22 @@ const tourSchema = new mongoose.Schema(
     },
     difficulty: {
       type: String,
-      requried: [true, 'A tour must have a difficulty'],
-      // Validation only for strings
+      required: [true, 'A tour must have a difficulty'],
       enum: {
         values: ['easy', 'medium', 'difficult'],
-        message: 'Difficulty is either: easy, medium or difficult'
+        message: 'Difficulty is either: easy, medium, difficult'
       }
     },
     ratingsAverage: {
       type: Number,
       default: 4.5,
       min: [1, 'Rating must be above 1.0'],
-      max: [5, 'Rating must be below 5']
+      max: [5, 'Rating must be below 5.0'],
+      set: val => Math.round(val * 10) / 10 // 4.666666, 46.6666, 47, 4.7
     },
     ratingsQuantity: {
       type: Number,
       default: 0
-    },
-    rating: {
-      type: Number,
-      default: 4.5
     },
     price: {
       type: Number,
@@ -53,20 +47,18 @@ const tourSchema = new mongoose.Schema(
     },
     priceDiscount: {
       type: Number,
-      // CUSTOM VALIDATION <<<<<<<<<<< NOT GOING TO WORK ON UPDATE
       validate: {
-        validator: function (val) {
-          //  This only points to current doc on NEW document creation
-          return val < this.price; // 100 < 200 - NO Error | 250 < 200 - ERROR
+        validator: function(val) {
+          // this only points to current doc on NEW document creation
+          return val < this.price;
         },
-        message: (props) =>
-          `Discount price (${props.value}) should be below regular price!`
+        message: 'Discount price ({VALUE}) should be below regular price'
       }
     },
     summary: {
       type: String,
       trim: true,
-      required: [true, 'A tour must have a summary']
+      required: [true, 'A tour must have a description']
     },
     description: {
       type: String,
@@ -74,7 +66,7 @@ const tourSchema = new mongoose.Schema(
     },
     imageCover: {
       type: String,
-      required: [true, 'A tour must have an image']
+      required: [true, 'A tour must have a cover image']
     },
     images: [String],
     createdAt: {
@@ -87,7 +79,7 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
-    startLocations: {
+    startLocation: {
       // GeoJSON
       type: {
         type: String,
@@ -103,12 +95,12 @@ const tourSchema = new mongoose.Schema(
         type: {
           type: String,
           default: 'Point',
-          enum: ['Point'],
-          coordinates: [Number],
-          address: String,
-          description: String,
-          day: Number
-        }
+          enum: ['Point']
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number
       }
     ]
   },
