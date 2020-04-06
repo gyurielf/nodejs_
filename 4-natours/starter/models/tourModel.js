@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const validator = require('validator');
+// const validator = require('validator');
+// const User = require('./userModel'); TURN ON IF YOU USE EMBEDDING
 
 const tourSchema = new mongoose.Schema(
   {
@@ -10,8 +11,8 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true, // remove whitespaces before and after of the string.
       maxlength: [40, 'A tour name must have less or equal then 40 characters'],
-      minlength: [10, 'A tour name must have more or equal then 10 characters'],
-      validate: [validator.isAlpha, 'Tour name must only contain characters']
+      minlength: [10, 'A tour name must have more or equal then 10 characters']
+      // validate: [validator.isAlpha, 'Tour name must only contain characters']
     },
     slug: String,
     duration: {
@@ -20,7 +21,7 @@ const tourSchema = new mongoose.Schema(
     },
     maxGroupSize: {
       type: Number,
-      required: [true, 'A tour must have a group size']
+      required: [false, 'A tour must have a group size']
     },
     difficulty: {
       type: String,
@@ -105,6 +106,12 @@ const tourSchema = new mongoose.Schema(
         description: String,
         day: Number
       }
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
+      }
     ]
   },
   {
@@ -156,6 +163,19 @@ tourSchema.pre(/^find/, function (next) {
   this.start = Date.now();
   next();
 });
+
+/**
+ * Implement EMBEDDING of tour guides.
+ * We are collect the users based on guides id, and replace them with the entire user data. and pass into the new tour.
+ **
+tourSchema.pre('save', async function (next) {
+  const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+
+  this.guides = await Promise.all(guidesPromises);
+
+  next();
+});
+ */
 
 // RUN AFTER THE QUERY HAS ALREADY EXECUTED. THEREFORE IT CAN ACCES TO THE DOCUMENTS THAT WERE RETURNED.
 // BECAUSE THE QUERY FINISHED AT THIS POINT
