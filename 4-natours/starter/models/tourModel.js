@@ -8,10 +8,10 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have a name'],
       unique: true,
-      trim: true,
+      trim: true, // remove whitespaces before and after of the string.
       maxlength: [40, 'A tour name must have less or equal then 40 characters'],
-      minlength: [10, 'A tour name must have more or equal then 10 characters']
-      // validate: [validator.isAlpha, 'Tour name must only contain characters']
+      minlength: [10, 'A tour name must have more or equal then 10 characters'],
+      validate: [validator.isAlpha, 'Tour name must only contain characters']
     },
     slug: String,
     duration: {
@@ -25,6 +25,7 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tour must have a difficulty'],
+      // Validation only for strings
       enum: {
         values: ['easy', 'medium', 'difficult'],
         message: 'Difficulty is either: easy, medium, difficult'
@@ -34,8 +35,8 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       default: 4.5,
       min: [1, 'Rating must be above 1.0'],
-      max: [5, 'Rating must be below 5.0'],
-      set: val => Math.round(val * 10) / 10 // 4.666666, 46.6666, 47, 4.7
+      max: [5, 'Rating must be below 5.0']
+      // set: (val) => Math.round(val * 10) / 10 // 4.666666, 46.6666, 47, 4.7
     },
     ratingsQuantity: {
       type: Number,
@@ -47,12 +48,14 @@ const tourSchema = new mongoose.Schema(
     },
     priceDiscount: {
       type: Number,
+      // CUSTOM VALIDATION <<<<<<<<<<< NOT GOING TO WORK ON UPDATE
       validate: {
-        validator: function(val) {
-          // this only points to current doc on NEW document creation
-          return val < this.price;
+        validator: function (val) {
+          //  This only points to current doc on NEW document creation
+          return val < this.price; // 100 < 200 - NO Error | 250 < 200 - ERROR
         },
-        message: 'Discount price ({VALUE}) should be below regular price'
+        message: (props) =>
+          `Discount price (${props.value}) should be below regular price!`
       }
     },
     summary: {

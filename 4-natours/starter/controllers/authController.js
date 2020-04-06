@@ -104,6 +104,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }); */
 });
 
+// Protection
 exports.protect = catchAsync(async (req, res, next) => {
   //  1) Getting token and check of it's there
   let token;
@@ -146,10 +147,10 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.restrictTo = (...roles) => {
   // Return a new FN, which is the middleware itself
   return (req, res, next) => {
-    // roles ['admin', 'lead-guide']. role='user
+    // roles ['admin', 'lead-guide']. role='user'
     // IF the current user role not in this array ['admin', 'lead-guide'] (which comes from tour routes), return next error in here.
     if (!roles.includes(req.user.role)) {
-      // req.user.role NOT in the roles array ? IF TRUE > ERR > IF FALSE > NEXT
+      // req.user.role NOT in the roles array ? IF TRUE > ERR, IF FALSE > NEXT
       // Determines whether an array includes a certain element, returning true or false as appropriate
 
       return next(
