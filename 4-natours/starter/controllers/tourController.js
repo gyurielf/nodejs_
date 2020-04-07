@@ -107,7 +107,10 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 // READ/LIST A TOUR BASED ON ID
 
 exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate('guides');
+  // Populating - default
+  // const tour = await Tour.findById(req.params.id).populate('guides');
+  // Populating - advanced, filter some data from output. IN tourModel - middleware
+  const tour = await Tour.findById(req.params.id);
   // The above code is shorthand version of this: Tour.findOne({ _id: req.params.id })
 
   if (!tour) {

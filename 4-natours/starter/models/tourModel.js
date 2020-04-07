@@ -177,6 +177,15 @@ tourSchema.pre('save', async function (next) {
 });
  */
 
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt'
+  });
+
+  next();
+});
+
 // RUN AFTER THE QUERY HAS ALREADY EXECUTED. THEREFORE IT CAN ACCES TO THE DOCUMENTS THAT WERE RETURNED.
 // BECAUSE THE QUERY FINISHED AT THIS POINT
 tourSchema.post(/^find/, function (docs, next) {
