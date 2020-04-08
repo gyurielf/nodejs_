@@ -112,7 +112,13 @@ const tourSchema = new mongoose.Schema(
         type: mongoose.Schema.ObjectId,
         ref: 'User'
       }
-    ]
+    ] /*, WAY 1, but we use virtual populate. 
+    reviews: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Review'
+      }
+    ] */
   },
   {
     /**
@@ -128,6 +134,14 @@ const tourSchema = new mongoose.Schema(
 // ahhoz, hogy ne kelljen tarolni feleslegesen plusz infot a db-ben, ezert firtualis propertiket lehet létrehozni, amiket így tudunk váltogatni/hasznalni.
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+// Virtual populate ## Video 156 - 5:30
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  // Connected fields
+  foreignField: 'tour', // This is the name of the field in the other model, where in the reference is stored.
+  localField: '_id' // the pair of the foreignfield here, is the current model
 });
 
 // ### DOCUMENT MIDDLEWARES - Mongoose use the middleware conception just like the Express.
@@ -156,7 +170,7 @@ tourSchema.post('save', function (doc, next) {
 
 // QUERY MIDDLEWARE - EVVEL MINDEN (EZZEL A SÉMÁVAL) LEFUTÓ QUERY ELŐTT BELETEHETÜNK EXTRA PARAMÉTEREKET.
 // PL USER KEZELÉSNÉL(JOGOSULTSÁGOK) HASZNÁLATOS DOLGOKAT
-// REGULAR expression /^find/ - minden find-al kezdodo query- nérvényes lesz.
+// REGULAR expression /^find/ - minden find-al kezdodo query-n érvényes lesz.
 tourSchema.pre(/^find/, function (next) {
   // tourSchema.pre('find', function (next) {
   this.find({ secretTour: { $ne: true } });

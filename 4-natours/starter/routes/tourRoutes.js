@@ -13,9 +13,17 @@ const {
   getMonthlyPlan
 } = require('../controllers/tourController');
 
+// Auth controller imports
 const { protect, restrictTo } = require('../controllers/authController');
 
+// ReviewRouter import
+const reviewRouter = require('./reviewRouters');
+
+// Express router import.
 const router = express.Router();
+
+// Rerouting to the review router
+router.use('/:tourId/reviews', reviewRouter);
 
 // This val param is hold the id param value in order to get acces to that id
 // router.param('id', checkID);
@@ -32,7 +40,7 @@ router.route('/stats').get(getTourStats);
 
 router
   .route('/')
-  .get(protect, restrictTo('admin', 'lead-guide'), getAllTours)
+  .get(protect, restrictTo('admin', 'lead-guide', 'user'), getAllTours)
   .post(createTour);
 
 router
@@ -52,6 +60,16 @@ router
   .get(tourController.getTour)
   .patch(tourController.updateTour)
   .delete(tourController.deleteTour);
+ */
+/*
+// Nested route firs try (without express) 
+router
+  .route('/:tourId/reviews')
+  .post(protect, restrictTo('user'), createReview);
+
+// POST /tour/234fda4/reviews
+// GET /tour/234fda4/reviews
+// GET /tour/234fda4/reviews/94484846dtr
  */
 
 // EXPORT MODULE

@@ -18,7 +18,8 @@ const {
   forgotPassword,
   resetPassword,
   protect,
-  updatePassword
+  updatePassword,
+  restrictTo
 } = require('../controllers/authController');
 
 // Express router import.

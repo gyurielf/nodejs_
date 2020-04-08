@@ -2,6 +2,7 @@ const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 // Aliasing -- PREFILLING QUERY PARTS OF THE REQUEST
 exports.aliasTopTours = async (req, res, next) => {
@@ -110,7 +111,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
   // Populating - default
   // const tour = await Tour.findById(req.params.id).populate('guides');
   // Populating - advanced, filter some data from output. IN tourModel - middleware
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate('reviews');
   // The above code is shorthand version of this: Tour.findOne({ _id: req.params.id })
 
   if (!tour) {
@@ -200,19 +201,22 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 });
 
 // DELETE A TOUR BASED ON ID
-exports.deleteTour = catchAsync(async (req, res, next) => {
-  // 204 status = NO CONTENT; usually dont send data back.
-  const deletedTour = await Tour.findByIdAndDelete(req.params.id);
 
-  if (!deletedTour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
+exports.deleteTour = factory.deleteOne(Tour);
 
-  res.status(204).json({
-    status: 'success',
-    data: null
-  });
-});
+// exports.deleteTour = catchAsync(async (req, res, next) => {
+//   // 204 status = NO CONTENT; usually dont send data back.
+//   const deletedTour = await Tour.findByIdAndDelete(req.params.id);
+
+//   if (!deletedTour) {
+//     return next(new AppError('No tour found with that ID', 404));
+//   }
+
+//   res.status(204).json({
+//     status: 'success',
+//     data: null
+//   });
+// });
 
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
