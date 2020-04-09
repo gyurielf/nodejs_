@@ -38,7 +38,11 @@ router.patch('/updateMe', protect, updateMe);
 router.delete('/deleteMe', protect, deleteMe);
 
 router.route('/').get(protect, getAllUsers).post(createUser);
-router.route('/:id').get(protect, getUser).patch(updateUser).delete(deleteUser);
+router
+  .route('/:id')
+  .get(protect, getUser)
+  .patch(updateUser)
+  .delete(protect, restrictTo('admin'), deleteUser);
 
 // EXPORT MODULE
 module.exports = router;
