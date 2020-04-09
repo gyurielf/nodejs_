@@ -82,8 +82,8 @@ exports.aliasTopTours = async (req, res, next) => {
 //   ////  if (skip > numTours) throw new Error('This page does not exist');
 //   ////}
 
-//   /* Az API Features class-ból létrehozunk egy új objektumot. Ebbe az objektbe, parseoljuk a query objectet - Tour.find() - és a query stringet, 
-//     ami az express-ból jön. - req.query - 
+//   /* Az API Features class-ból létrehozunk egy új objektumot. Ebbe az objektbe, parseoljuk a query objectet - Tour.find() - és a query stringet,
+//     ami az express-ból jön. - req.query -
 //     Ezután minden egyes methoddal (advancedFilter,sort,limitFields etc...) amit egymás után meghívok, alapvetően, manipulálom a query-t.
 //     További methodokat tudunk majd hozzáadni, úgy ahogy ezeket a methodokat is hozzáadtuk.
 //     */

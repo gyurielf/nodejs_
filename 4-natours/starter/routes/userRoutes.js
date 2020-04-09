@@ -3,12 +3,13 @@ const express = require('express');
 // User controlle imports
 const {
   getAllUsers,
-  createUser,
+  // createUser,
   getUser,
   updateUser,
   deleteUser,
   updateMe,
-  deleteMe
+  deleteMe,
+  getMe
 } = require('../controllers/userController');
 
 // Auth controller imports
@@ -33,16 +34,25 @@ router.post('/signup', signup);
 router.post('/login', login);
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
-router.patch('/updateMyPassword', protect, updatePassword);
-router.patch('/updateMe', protect, updateMe);
-router.delete('/deleteMe', protect, deleteMe);
 
-router.route('/').get(protect, getAllUsers).post(createUser);
-router
-  .route('/:id')
-  .get(protect, getUser)
-  .patch(updateUser)
-  .delete(protect, restrictTo('admin'), deleteUser);
+// THE PROTECT ACCEPTED ON THE ALL ROUTES THAT COME AFTER THIS POINT
+// Thats because middlewares runs in sequence
+// Ettől kezdődően minden routen érvényesül a protect!!
+router.use(protect);
+
+router.patch('/updateMyPassword', updatePassword);
+router.get('/me', getMe, getUser);
+router.patch('/updateMe', updateMe);
+router.delete('/deleteMe', deleteMe);
+
+// THE PROTECT AND THE RESTRICTTO ACCEPTED ON THE ALL ROUTES THAT COME AFTER THIS POINT
+// Thats because middlewares runs in sequence
+// Ettől kezdődően minden routen érvényesül a protect!!
+router.use(restrictTo('admin'));
+
+router.route('/').get(getAllUsers);
+// .post(createUser);
+router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
 // EXPORT MODULE
 module.exports = router;

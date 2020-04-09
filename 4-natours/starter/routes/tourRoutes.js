@@ -35,18 +35,20 @@ router.use('/:tourId/reviews', reviewRouter);
 // Add it to the post handler stack.
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
-router.route('/monthly-plan/:year').get(getMonthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(protect, restrictTo('guide', 'lead-guide', 'admin'), getMonthlyPlan);
 router.route('/stats').get(getTourStats);
 
 router
   .route('/')
-  .get(protect, restrictTo('admin', 'lead-guide', 'user'), getAllTours)
-  .post(createTour);
+  .get(getAllTours)
+  .post(protect, restrictTo('admin', 'lead-guide'), createTour);
 
 router
   .route('/:id')
   .get(getTour)
-  .patch(updateTour)
+  .patch(protect, restrictTo('admin', 'lead-guide'), updateTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
 /* 

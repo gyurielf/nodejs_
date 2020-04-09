@@ -34,6 +34,11 @@ const filterObj = (obj, ...allowedFields) => {
 //   });
 // });
 
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
 // #### User self data update
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) Create an error if usert POSTs password data

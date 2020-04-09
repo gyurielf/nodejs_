@@ -2,6 +2,10 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const APIFeatures = require('../utils/apiFeatures');
 
+/**
+ *
+ * @param {*} Model Data model name Eg: User, Tour, Review etc..
+ */
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     // 204 status = NO CONTENT; usually dont send data back.
@@ -17,6 +21,10 @@ exports.deleteOne = (Model) =>
     });
   });
 
+/**
+ *
+ * @param {*} Model Data model name Eg: User, Tour, Review etc..
+ */
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const docObj = await Model.findByIdAndUpdate(req.params.id, req.body, {
@@ -36,6 +44,10 @@ exports.updateOne = (Model) =>
     });
   });
 
+/**
+ *
+ * @param {*} Model Data model name Eg: User, Tour, Review etc..
+ */
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
@@ -48,6 +60,11 @@ exports.createOne = (Model) =>
     });
   });
 
+/**
+ *
+ * @param {*} Model Data model name Eg: User, Tour, Review etc..
+ * @param {*} populateOptions
+ */
 exports.getOne = (Model, populateOptions) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
@@ -67,6 +84,10 @@ exports.getOne = (Model, populateOptions) =>
     });
   });
 
+/**
+ *
+ * @param {*} Model Data model name Eg: User, Tour, Review etc..
+ */
 exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
     // To allow for nested GET reviews on tour. (hack)
