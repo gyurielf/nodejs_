@@ -43,6 +43,7 @@ const reviewSchema = new mongoose.Schema(
 
 reviewSchema.index({ rating: -1 });
 
+// Video 169
 reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
 // ### VIRTUAL PROPERTIES
@@ -70,6 +71,7 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
+// Video 167-168
 reviewSchema.statics.calcAverageRatings = async function (tourId) {
   // in a static function, the this points to the current model.
   const stats = await this.aggregate([
@@ -114,6 +116,7 @@ reviewSchema.post('save', function () {
 });
 
 /**
+ * Video 167-168
  * We cannot use the POST method, because at this point in time, we no longer have access to the query,
  * because the query has already executed. without the query, we cannot save the review document.
  **/
@@ -124,6 +127,7 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
 });
 
 /**
+ * Video 167-168
  * In ordrer to be able to run this function here calcAverageRatings() also on update and on delete.
  * So we need to use query middleware that mongoose give us fr these situations.
  * Whit this, we dont have to aceess directly to the current document. And we need to go around by using this.findOne(),
