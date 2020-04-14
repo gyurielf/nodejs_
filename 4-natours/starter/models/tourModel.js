@@ -136,6 +136,8 @@ const tourSchema = new mongoose.Schema(
 // tourSchema.index({ price: 1 });
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+// Video 170
+tourSchema.index({ startLocation: '2dsphere' });
 
 // Virtual properties - (Duration in days.) ## NOT USABLE IN A QUERY ##
 // ahhoz, hogy ne kelljen tarolni feleslegesen plusz infot a db-ben, ezert firtualis propertiket lehet létrehozni, amiket így tudunk váltogatni/hasznalni.
@@ -217,11 +219,12 @@ tourSchema.post(/^find/, function (docs, next) {
 
 // AGGREGATION MIDDLEWARE
 // eltüntetjük ebből is a secret-tourokat. Úgy, hogy hozzáadunk még egy match propertyt az aggregation pipeline obj tömbjéhez.
-tourSchema.pre('aggregate', function (next) {
+// Kommentelve a geoNear miatt, mivel annak szükséges, hogy az első legyen a pipeline-ban.
+/* tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  // console.log(this.pipeline());
+  console.log(this.pipeline());
   next();
-});
+}); */
 
 const Tour = mongoose.model('Tour', tourSchema);
 

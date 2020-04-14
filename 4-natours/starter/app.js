@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -14,10 +15,22 @@ const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
+// SET (built-in) server side rendering template engine.
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 app.disable('x-powered-by');
 
 // ###### 1) GLOBAL MIDDLEWARES
 // If we dont use the next at the and, the req res cycle will be stuck.
+
+/**
+ * Serving static files
+ * Works like a root folder
+ * **/
+// app.use(express.static(`${__dirname}/public`));
+// replaced but same with the top one.
+app.use(express.static(path.join(__dirname, 'public')));
 
 /**
  * Set security HTTP headers
@@ -75,12 +88,6 @@ app.use(
 );
 
 /**
- * Serving static files
- * Works like a root folder
- * **/
-app.use(express.static(`${__dirname}/public`));
-
-/**
 app.use((req, res, next) => {
   console.log('Hello from the middleware!');
   next();
@@ -94,6 +101,29 @@ app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   // console.log(req.headers);
   next();
+});
+
+app.get('/', (req, res) => {
+  res.status(200).render('base', {
+    tour: 'The Forest Hiker',
+    user: 'Jonas'
+  });
+});
+
+app.get('/overview', (req, res) => {
+  res.status(200).render('overview', {
+    title: 'All tours'
+  });
+});
+
+app.get('/tour', (req, res) => {
+  res.status(200).render('tour', {
+    title: 'The Forest Hiker Tour'
+  });
+});
+
+app.get('/login', (req, res) => {
+  res.status(200).render('login');
 });
 
 // ###### 2) TOUR ROUTES

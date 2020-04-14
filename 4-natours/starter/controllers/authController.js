@@ -143,8 +143,13 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-// Using rest params (ES6), which create an array of all arguments that were sepecified.
+/**
+ * Restrict this endpoint for the users. Only allowed to the added roles.
+ * @param {String} roles ('admin', 'member', 'guest')
+ * @returns return a new FN, which is the middleware itself
+ */
 exports.restrictTo = (...roles) => {
+  // Using rest params (ES6), which create an array of all arguments that were sepecified.
   // Return a new FN, which is the middleware itself
   return (req, res, next) => {
     // roles ['admin', 'lead-guide']. role='user'
