@@ -5,13 +5,13 @@ const router = express.Router();
 const {
   getOverview,
   getTour,
-  login
+  getLoginForm
 } = require('../controllers/viewController');
 
 router.get('/', getOverview);
 
 router.get('/tour/:slug', getTour);
 
-router.get('/login', login);
+router.get('/login', getLoginForm);
 
 module.exports = router;

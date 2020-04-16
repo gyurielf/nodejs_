@@ -38,8 +38,8 @@ exports.getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.login = (req, res) => {
+exports.getLoginForm = catchAsync(async (req, res, next) => {
   res.status(200).render('login', {
-    blba: 'sadsad'
+    title: 'Login'
   });
-};
+});
