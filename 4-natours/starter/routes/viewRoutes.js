@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const { protect } = require('../controllers/authController');
+const { isLoggedIn } = require('../controllers/authController');
 
 const {
   getOverview,
@@ -10,9 +10,11 @@ const {
   getLoginForm
 } = require('../controllers/viewController');
 
+router.use(isLoggedIn);
+
 router.get('/', getOverview);
 
-router.get('/tour/:slug', protect, getTour);
+router.get('/tour/:slug', getTour);
 
 router.get('/login', getLoginForm);
 

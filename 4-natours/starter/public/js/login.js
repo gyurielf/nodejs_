@@ -14,9 +14,10 @@
 
   console.log(content);
 }; */
+import axios from 'axios';
+import { showAlert } from './alerts';
 
-const login = async (email, password) => {
-  console.log(email, password);
+export const login = async (email, password) => {
   try {
     const result = await axios({
       method: 'POST',
@@ -26,17 +27,35 @@ const login = async (email, password) => {
         password
       }
     });
-    console.log(result);
+    // console.log(result.data.status);
+    // console.log(result);
+
+    if (result.data.status === 'success') {
+      showAlert('success', 'Logged in successfully!');
+      window.setTimeout(() => {
+        location.assign('/');
+      }, 1500);
+    }
   } catch (err) {
-    console.log(err.response.data);
+    console.log('LOL');
+    showAlert('error', err.response.data.message);
+    // console.log(err.result.data.message);
   }
 };
 
-document.querySelector('.form').addEventListener('submit', (e) => {
-  e.preventDefault();
+export const logout = async () => {
+  try {
+    const result = await axios({
+      method: 'GET',
+      url: 'http://localhost:8000/api/v1/users/logout'     
+    });
 
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-
-  login(email, password);
-});
+    if (result.data.status === 'success') {
+      location.reload(true);
+    }
+    
+  } catch (err) {
+    showAlert('error', 'Error logging out!');
+    console.log(err.result.data.message);
+  }
+};

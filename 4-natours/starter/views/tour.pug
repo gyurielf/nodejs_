@@ -64,9 +64,10 @@ block content
 
   section.section-pictures
     - let imgCounter = 1;
-    each tourImg in tour.images
+    each tourImg, i in tour.images
       .picture-box
-        img(class=`picture-box__img picture-box__img--${imgCounter++}`)(src=`/img/tours/${tourImg}`, alt=`${tour.name}`)
+        //- img(class=`picture-box__img picture-box__img--${imgCounter++}`)(src=`/img/tours/${tourImg}`, alt=`${tour.name}`)
+        img.picture-box__img(src=`/img/tours/${tourImg}`, alt=`${tour.name} ${ i+ 1}`, class=`picture-box__img--${i + 1}`)
 
   section.section-map
     #map(data-locations=`${JSON.stringify(tour.locations)}`)

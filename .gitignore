@@ -1,4 +1,5 @@
 */starter/node_modules/
+*/starter/.cache/
 */.idea/
 */config.env
 */_.eslintrc.js_PROBA
