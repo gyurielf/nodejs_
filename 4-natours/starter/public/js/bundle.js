@@ -8619,7 +8619,7 @@ var currentUserUpdate = /*#__PURE__*/function () {
             if (result.data.status === 'success') {
               (0, _alerts.showAlert)('success', 'User data change was successfully!');
               window.setTimeout(function () {
-                location.reload(true);
+                location.reload();
               }, 1500);
             }
 
@@ -8672,7 +8672,7 @@ var currentUserPasswordChange = /*#__PURE__*/function () {
             if (result.data.status === 'success') {
               (0, _alerts.showAlert)('success', 'Password change was successfully!');
               window.setTimeout(function () {
-                location.reload(true);
+                location.reload();
               }, 1500);
             }
 
@@ -8972,7 +8972,7 @@ var _account = require("./account");
 
 // DOM ELEMENTS
 var mapBox = document.getElementById('map');
-var loginForm = document.querySelector('.form');
+var loginForm = document.getElementById('loginForm');
 var logoutButton = document.querySelector('.nav__el--logout');
 var passwordSaveButton = document.getElementById('passwordSaveBtn');
 var updateSaveButton = document.getElementById('updateSaveBtn'); // Delegation
@@ -9044,7 +9044,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49678" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54265" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

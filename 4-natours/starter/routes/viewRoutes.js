@@ -11,13 +11,11 @@ const {
   getAccount
 } = require('../controllers/viewController');
 
-router.use(isLoggedIn);
+router.get('/', isLoggedIn, getOverview);
 
-router.get('/', getOverview);
+router.get('/tour/:slug', isLoggedIn, getTour);
 
-router.get('/tour/:slug', getTour);
-
-router.get('/login', getLoginForm);
+router.get('/login', isLoggedIn, getLoginForm);
 
 // These routes are protected ( needs to be logged in!)
 // router.use(protect);

@@ -6,7 +6,7 @@ import { currentUserPasswordChange, currentUserUpdate } from './account';
 
 // DOM ELEMENTS
 const mapBox = document.getElementById('map');
-const loginForm = document.querySelector('.form');
+const loginForm = document.getElementById('loginForm');
 const logoutButton = document.querySelector('.nav__el--logout');
 const passwordSaveButton = document.getElementById('passwordSaveBtn');
 const updateSaveButton = document.getElementById('updateSaveBtn');
@@ -38,10 +38,10 @@ if (updateSaveButton) {
     const userEmail = document.getElementById('email').value;
     e.preventDefault();
     currentUserUpdate(userName, userEmail);
-  })  
+  });
 }
 
-if (passwordSaveButton) {  
+if (passwordSaveButton) {
   passwordSaveButton.addEventListener('click', (e) => {
     const currentPassword = document.getElementById('password-current').value;
     const password = document.getElementById('password').value;
