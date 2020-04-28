@@ -77,6 +77,7 @@ const sendErrorProd = (err, req, res) => {
       // Programming or other unknown error: don't leak error details.
     });
   }
+  // console.log('ERR', err);
   // 2) Send generic message
   return res.status(err.statusCode).render('error', {
     title: 'Something went wrong...',
@@ -100,13 +101,14 @@ module.exports = (err, req, res, next) => {
      */
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     // 11000 is a mongoose douplication error code.
-    if (err.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
 
-    if (err.name === 'ValidationError') error = handleValidationErrorDB(error);
+    if (error.name === 'ValidationError')
+      error = handleValidationErrorDB(error);
 
-    if (err.name === 'JsonWebTokenError') error = handleJWTError();
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
 
-    if (err.name === 'TokenExpiredError') error = handleJWTExpiredError();
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
 
     sendErrorProd(error, req, res);
   }

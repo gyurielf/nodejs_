@@ -33,7 +33,6 @@ const router = express.Router();
  **/
 router.post('/signup', signup);
 router.post('/login', login);
-router.get('/logout', logout);
 
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
@@ -43,6 +42,7 @@ router.patch('/resetPassword/:token', resetPassword);
 // Ettől kezdődően minden routen érvényesül a protect!!
 router.use(protect);
 
+router.get('/logout', logout);
 router.patch('/updateMyPassword', updatePassword);
 router.get('/me', getMe, getUser);
 router.patch('/updateMe', updateMe);

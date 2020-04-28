@@ -8519,40 +8519,56 @@ exports.login = login;
 
 var logout = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-    var result;
+    var url, rawResponse, response;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.prev = 0;
-            _context2.next = 3;
-            return (0, _axios.default)({
+
+            /* const result = await axios({
               method: 'GET',
               url: 'http://localhost:8000/api/v1/users/logout'
             });
+              if (result.data.status === 'success') {
+              // location.reload(true);
+              window.setTimeout(() => {
+                location.assign('/');
+              }, 1500);
+            } */
+            url = 'http://localhost:8000/api/v1/users/logout';
+            _context2.next = 4;
+            return fetch(url);
 
-          case 3:
-            result = _context2.sent;
-
-            if (result.data.status === 'success') {
-              location.reload(true);
-            }
-
-            _context2.next = 11;
-            break;
+          case 4:
+            rawResponse = _context2.sent;
+            _context2.next = 7;
+            return rawResponse.json();
 
           case 7:
-            _context2.prev = 7;
+            response = _context2.sent;
+
+            if (response.status === 'success') {
+              window.setTimeout(function () {
+                location.assign('/');
+              }, 1500);
+            }
+
+            _context2.next = 15;
+            break;
+
+          case 11:
+            _context2.prev = 11;
             _context2.t0 = _context2["catch"](0);
             (0, _alerts.showAlert)('error', 'Error logging out!');
             console.log(_context2.t0.result.data.message);
 
-          case 11:
+          case 15:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[0, 7]]);
+    }, _callee2, null, [[0, 11]]);
   }));
 
   return function logout() {
@@ -8883,7 +8899,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50897" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50085" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
