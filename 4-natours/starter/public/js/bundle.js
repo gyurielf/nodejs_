@@ -8465,7 +8465,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var login = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(email, password) {
-    var result;
+    var result, queryString, reqQueryParams, requestedURL;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -8484,13 +8484,23 @@ var login = /*#__PURE__*/function () {
           case 3:
             result = _context.sent;
 
-            // console.log(result.data.status);
-            // console.log(result);
             if (result.data.status === 'success') {
-              (0, _alerts.showAlert)('success', 'Logged in successfully!');
-              window.setTimeout(function () {
-                location.assign('/');
-              }, 1500);
+              queryString = window.location.search;
+              reqQueryParams = new URLSearchParams(queryString);
+              requestedURL = reqQueryParams.get('requestedUrl'); //Setting Local Storage Item
+              // localStorage.setItem('requestedUrl', requestedURL);
+
+              if (requestedURL) {
+                (0, _alerts.showAlert)('success', 'Logged in successfully!');
+                window.setTimeout(function () {
+                  location.assign("".concat(requestedURL));
+                }, 1500);
+              } else {
+                (0, _alerts.showAlert)('success', 'Logged in successfully!');
+                window.setTimeout(function () {
+                  location.assign('/');
+                }, 1500);
+              }
             }
 
             _context.next = 11;
@@ -8499,7 +8509,7 @@ var login = /*#__PURE__*/function () {
           case 7:
             _context.prev = 7;
             _context.t0 = _context["catch"](0);
-            console.log('LOL');
+            console.log('Error...');
             (0, _alerts.showAlert)('error', _context.t0.response.data.message); // console.log(err.result.data.message);
 
           case 11:
@@ -9044,7 +9054,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54265" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61930" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -133,6 +133,17 @@ exports.protect = catchAsync(async (req, res, next) => {
   //   console.log(token);
 
   if (!token) {
+    // A) Only for rendered pages
+    if (!req.originalUrl.startsWith('/api')) {
+      const cookieOptions = {
+        expires: new Date(Date.now() + 10 * 1000),
+        secure: false,
+        httpOnly: true
+      };
+      res.cookie('requestedUrl', req.originalUrl, cookieOptions);
+      return res.redirect('/login');
+    }
+    // B) return err msg for API
     return next(
       new AppError('You are not logged in! Please log in to get access.', 401)
     );
@@ -157,10 +168,13 @@ exports.protect = catchAsync(async (req, res, next) => {
   // Grant access to protected route
   req.user = currentUser;
   res.locals.user = currentUser;
+
   next();
 });
 
-// Only for rendered pages, no errors!
+/*
+ * Only for RENDERED PAGES pages, no errors! IF the the user is logged in, RENDER the page as a logged in user
+ * */
 exports.isLoggedIn = async (req, res, next) => {
   try {
     if (req.cookies.jwt) {

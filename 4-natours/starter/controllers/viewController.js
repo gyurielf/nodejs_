@@ -44,6 +44,13 @@ exports.getTour = catchAsync(async (req, res, next) => {
 });
 
 exports.getLoginForm = catchAsync(async (req, res, next) => {
+  // const { requestedUrl } = req.query;
+  // console.log(requestedUrl);
+  // if (requestedUrl) {
+  //   res.status(200).render('login', {
+  //     title: 'Login'      
+  //   });
+  // }
   res.status(200).render('login', {
     title: 'Login'
   });

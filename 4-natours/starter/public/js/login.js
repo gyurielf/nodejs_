@@ -27,17 +27,26 @@ export const login = async (email, password) => {
         password
       }
     });
-    // console.log(result.data.status);
-    // console.log(result);
-
     if (result.data.status === 'success') {
-      showAlert('success', 'Logged in successfully!');
-      window.setTimeout(() => {
-        location.assign('/');
-      }, 1500);
+      const queryString = window.location.search;
+      const reqQueryParams = new URLSearchParams(queryString);
+      const requestedURL = reqQueryParams.get('requestedUrl');
+      //Setting Local Storage Item
+      // localStorage.setItem('requestedUrl', requestedURL);
+      if (requestedURL) {
+        showAlert('success', 'Logged in successfully!');
+        window.setTimeout(() => {
+          location.assign(`${requestedURL}`);
+        }, 1500);
+      } else {
+        showAlert('success', 'Logged in successfully!');
+        window.setTimeout(() => {
+          location.assign('/');
+        }, 1500);
+      }
     }
   } catch (err) {
-    console.log('LOL');
+    console.log('Error...');
     showAlert('error', err.response.data.message);
     // console.log(err.result.data.message);
   }

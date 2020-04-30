@@ -11,6 +11,7 @@ const {
   getAccount
 } = require('../controllers/viewController');
 
+// isLoggedIn render the page header for the user if logged in. if has protect middleware, thats do the
 router.get('/', isLoggedIn, getOverview);
 
 router.get('/tour/:slug', isLoggedIn, getTour);
