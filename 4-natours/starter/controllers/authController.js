@@ -107,7 +107,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.logout = catchAsync(async (req, res, next) => {
   const cookieOptions = {
-    expires: new Date(Date.now() + 10 * 1000),
+    expires: new Date(Date.now() + 1 * 2000),
     secure: false,
     httpOnly: true
   };
@@ -135,13 +135,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!token) {
     // A) Only for rendered pages
     if (!req.originalUrl.startsWith('/api')) {
-      const cookieOptions = {
-        expires: new Date(Date.now() + 10 * 1000),
-        secure: false,
-        httpOnly: true
-      };
-      res.cookie('requestedUrl', req.originalUrl, cookieOptions);
-      return res.redirect('/login');
+      return res.redirect(`/login?requestedUrl=${req.originalUrl}`);
     }
     // B) return err msg for API
     return next(

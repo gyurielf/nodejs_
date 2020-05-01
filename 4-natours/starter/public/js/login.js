@@ -31,8 +31,6 @@ export const login = async (email, password) => {
       const queryString = window.location.search;
       const reqQueryParams = new URLSearchParams(queryString);
       const requestedURL = reqQueryParams.get('requestedUrl');
-      //Setting Local Storage Item
-      // localStorage.setItem('requestedUrl', requestedURL);
       if (requestedURL) {
         showAlert('success', 'Logged in successfully!');
         window.setTimeout(() => {
