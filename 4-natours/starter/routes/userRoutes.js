@@ -1,4 +1,6 @@
+// const path = require('path');
 const express = require('express');
+// const AppError = require('../utils/appError');
 
 // User controlle imports
 const {
@@ -9,7 +11,9 @@ const {
   deleteUser,
   updateMe,
   deleteMe,
-  getMe
+  getMe,
+  uploadUserPhoto,
+  resizeUserPhoto
 } = require('../controllers/userController');
 
 // Auth controller imports
@@ -45,7 +49,7 @@ router.use(protect);
 router.get('/logout', logout);
 router.patch('/updateMyPassword', updatePassword);
 router.get('/me', getMe, getUser);
-router.patch('/updateMe', updateMe);
+router.patch('/updateMe', uploadUserPhoto, resizeUserPhoto, updateMe);
 router.delete('/deleteMe', deleteMe);
 
 // THE PROTECT AND THE RESTRICTTO ACCEPTED ON THE ALL ROUTES THAT COME AFTER THIS POINT

@@ -67,6 +67,7 @@ export const logout = async () => {
     const rawResponse = await fetch(url);
     const response = await rawResponse.json();
     if (response.status === 'success') {
+      showAlert('success', 'Logging out...');
       window.setTimeout(() => {
         location.assign('/');
       }, 1500);

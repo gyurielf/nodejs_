@@ -1,7 +1,74 @@
+const path = require('path');
+const multer = require('multer');
+const sharp = require('sharp');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
+
+/* 
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/users');
+  },
+  filename: (req, file, cb) => {
+    const date = new Date();
+    const today = `${date.getFullYear()}${
+      date.getMonth() + 1
+    }${date.getDate()}`;
+    const time = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+    const uniqueSuffix = `${today}${time}-${Math.round(Math.random() * 1e9)}`;
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `user-${req.user.id}-${uniqueSuffix}.${ext}`);
+  }
+}); 
+*/
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  const filetypes = /jpeg|jpg|png/;
+  const mimetype = filetypes.test(file.mimetype);
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  if (file.mimetype.startsWith('image') && mimetype && extname) {
+    return cb(null, true);
+  }
+  cb(
+    new AppError(
+      `Error: File upload only supports the following filetypes - ${filetypes}`,
+      400
+    ),
+    false
+  );
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter
+});
+
+exports.uploadUserPhoto = upload.single('photo');
+
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  // File name parts
+  const date = new Date();
+  const today = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
+  const time = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+  const uniqueSuffix = `${today}${time}-${Math.round(Math.random() * 1e9)}`;
+
+  // we should defile/redefine the file-name, what we would write to the database.
+  req.file.filename = `user-${req.user.id}-${uniqueSuffix}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg()
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+});
 
 /**
  * Filtering fields if are not allowed - and show the allowed field in the request.
@@ -41,6 +108,9 @@ exports.getMe = (req, res, next) => {
 
 // #### User self data update
 exports.updateMe = catchAsync(async (req, res, next) => {
+  // console.log(req.file);
+  // console.log(req.body);
+
   // 1) Create an error if usert POSTs password data
   if (req.body.password || req.body.passwordConfirm)
     return next(
@@ -50,8 +120,9 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       )
     );
 
-  // 2) Filtered out unwanted fiend names that are not alolowed to be updated
+  // 2) Filtered out unwanted fiend names that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name', 'email');
+  if (req.file) filteredBody.photo = req.file.filename;
 
   // 3) update the user document with
   // All the save middleware is not run!

@@ -1,3 +1,6 @@
+const path = require('path');
+const multer = require('multer');
+const sharp = require('sharp');
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -219,6 +222,90 @@ exports.aliasTopTours = async (req, res, next) => {
 //   });
 // });
 
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  const filetypes = /jpeg|jpg|png/;
+  const mimetype = filetypes.test(file.mimetype);
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  if (file.mimetype.startsWith('image') && mimetype && extname) {
+    return cb(null, true);
+  }
+  cb(
+    new AppError(
+      `Error: File upload only supports the following filetypes - ${filetypes}`,
+      400
+    ),
+    false
+  );
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter
+});
+
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 }
+]);
+
+// upload.single('images'); // produce req.file
+// upload.array('images', 5); // produce req.files
+
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  // console.log(req.files);
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  // File name parts
+  const date = new Date();
+  const today = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
+  const time = `${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+  const uniqueSuffix = `${today}${time}-${Math.round(Math.random() * 1e9)}`;
+
+  // we should defile/redefine the file-name, what we would write to the database.
+  req.body.imageCover = `tour-${req.params.id}-${uniqueSuffix}-cover.jpeg`;
+
+  // 1) Cover image
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg()
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  // 2) Images
+  req.body.images = [];
+
+  /* Az alap kódra így gondoltam, mivel eddig is így volt a megoldás, de ez nem működőképes, mivel ez egy callb fn,
+   és a for-each tovább menne a next-re, nem várná meg az összeset. ezért kerül be a MAP megoldás.
+  req.files.images.forEach(async (el, i) => {    
+    const filename = `tour-${req.params.id}-${uniqueSuffix}-${i + 1}.jpeg`;
+    await sharp(req.files.image[el].buffer)
+      .resize(2000, 1333)
+      .toFormat('jpeg')
+      .jpeg()
+      .toFile(`public/img/tours/${filename}`);
+
+    req.body.images.push(filename);
+  }); 
+  */
+  /* Az összes eredményt megvárom és csak azt követően megyek tovább. az összes promise await/resolve-ra kerül és bepusholódik a req.body.images-be */
+  await Promise.all(
+    req.files.images.map(async (el, i) => {
+      const filename = `tour-${req.params.id}-${uniqueSuffix}-${i + 1}.jpeg`;
+      await sharp(req.files.images[i].buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg()
+        .toFile(`public/img/tours/${filename}`);
+
+      req.body.images.push(filename);
+    })
+  );
+
+  next();
+});
+
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     { $match: { ratingsAverage: { $gte: 4.5 } } },
@@ -355,7 +442,7 @@ exports.getToursWithIn = catchAsync(async (req, res, next) => {
     }
   });
 
-  console.log(distance, lat, lng, unit);
+  // console.log(distance, lat, lng, unit);
 
   res.status(200).json({
     status: 'success',
