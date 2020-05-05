@@ -5,6 +5,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
+const Email = require('../utils/email');
 
 /* 
 const multerStorage = multer.diskStorage({
@@ -130,6 +131,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     new: true,
     runValidators: true
   });
+
+  await new Email(req.user, '').sendWelcome();
 
   res.status(200).json({
     status: 'success',

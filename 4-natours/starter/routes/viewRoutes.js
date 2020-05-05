@@ -8,8 +8,13 @@ const {
   getOverview,
   getTour,
   getLoginForm,
-  getAccount
+  getAccount,
+  getForgotPasswordForm,
+  getPasswordResetForm
 } = require('../controllers/viewController');
+
+router.get('/password-reset/:tokenId', getPasswordResetForm);
+router.get('/forgot-password', getForgotPasswordForm);
 
 // isLoggedIn render the page header for the user if logged in. if has protect middleware, thats do the
 router.get('/', isLoggedIn, getOverview);

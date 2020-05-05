@@ -3,6 +3,7 @@ import '@babel/polyfill';
 import { displayMap } from './mapbox';
 import { login, logout } from './login';
 import { updateSettings } from './account';
+import { passwordReset, forgotPassword } from './password';
 
 // DOM ELEMENTS
 const mapBox = document.getElementById('map');
@@ -11,6 +12,9 @@ const logoutButton = document.querySelector('.nav__el--logout');
 const passwordSaveButton = document.querySelector('.form-user-settings');
 // const updateSaveButton = document.getElementById('updateSaveBtn');
 const updateSaveButton = document.querySelector('.form-user-data');
+
+const forgotPasswordForm = document.getElementById('forgotPassword__form');
+const passwordResetForm = document.getElementById('passwordResetForm');
 
 // Delegation
 if (mapBox) {
@@ -64,5 +68,22 @@ if (passwordSaveButton) {
     document.getElementById('password-current').value = '';
     document.getElementById('password').value = '';
     document.getElementById('password-confirm').value = '';
+  });
+}
+
+if (passwordResetForm) {
+  passwordResetForm.addEventListener('submit', async (el) => {
+    el.preventDefault();
+    const newPassword = document.getElementById('password').value;
+    const newPasswordConfirm = document.getElementById('passwordConfirm').value;
+    await passwordReset(newPassword, newPasswordConfirm);
+  });
+}
+
+if (forgotPasswordForm) {
+  forgotPasswordForm.addEventListener('submit', async (el) => {
+    el.preventDefault();
+    const email = document.getElementById('forgotEmail').value;
+    await forgotPassword(email);
   });
 }

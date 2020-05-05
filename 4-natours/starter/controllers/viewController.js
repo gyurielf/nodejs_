@@ -1,4 +1,6 @@
+const crypto = require('crypto');
 const Tour = require('../models/tourModel');
+const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
@@ -48,7 +50,7 @@ exports.getLoginForm = catchAsync(async (req, res, next) => {
   // console.log(requestedUrl);
   // if (requestedUrl) {
   //   res.status(200).render('login', {
-  //     title: 'Login'      
+  //     title: 'Login'
   //   });
   // }
   res.status(200).render('login', {
@@ -60,4 +62,32 @@ exports.getAccount = catchAsync(async (req, res, next) => {
   res.status(200).render('account', {
     title: 'Account Settings'
   });
+});
+
+exports.getForgotPasswordForm = catchAsync(async (req, res, next) => {
+  res.status(200).render('forgot', {
+    title: 'Forgot password'
+  });
+});
+
+exports.getPasswordResetForm = catchAsync(async (req, res, next) => {
+  // console.log(req.params.tokenId);
+
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.tokenId)
+    .digest('hex');
+
+  const userR = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() }
+  });
+
+  if (userR) {
+    res.status(200).render('passwordReset', {
+      title: 'Password reset page'
+    });
+  }
+
+  return next(new AppError('Your token expired or doesnt exist', 401));
 });

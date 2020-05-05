@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const sendEmail = require('../utils/email');
+// const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 
 // 129. video 23:00
 const signToken = (id) => {
@@ -16,13 +17,13 @@ const signToken = (id) => {
 /**
  * Create and send JWT token & http code & user data.
  * send JWT token as cookie.
- * @param user Current user (we would look user._id after)
- * @param statusCode HTTP status code
- * @param res The res object is available everywhere! Not need to create the variable.
+ * @param {Object} user Current user (we would look user._id after)
+ * @param {String} statusCode HTTP status code
+ * @param {Object} res The res object is available everywhere! Not need to create the variable.
  */
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
-  //////// Cookie settings and options.
+  // Cookie settings and options.
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
@@ -64,6 +65,10 @@ exports.signup = catchAsync(async (req, res, next) => {
     // user can not set role for yourself
     // role: req.body.role
   });
+
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  // console.log(url);
+  await new Email(newUser, url).sendWelcome();
   // Ezzel helyettesítem a lenti kódot. Delegalva lett FN-be.
   createSendToken(newUser, 201, res);
   /*  const token = signToken(newUser._id);
@@ -239,19 +244,37 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
    **/
   await user.save({ validateBeforeSave: false });
 
-  // 3) Send it back tu user's email.
+  // 3) ### Send it back tu user's email. -- API VERSION
   const resetURL = `${req.protocol}://${req.get(
     'host'
   )}/api/v1/users/resetPassword/${resetToken}`;
+
   const message = `Forgot your password? Submit a PATCH request wit your new password and passwordConfirm to: ${resetURL}\nIf you didn't forget your password, please ignore this email!`;
 
+  // ### For rendered version
+
   try {
-    await sendEmail({
-      // or use req.body.email
-      email: user.email,
-      subject: 'Your password reset token (valid for 10 min)',
-      message
-    });
+    // for rendered version
+    if (process.env.NODE_ENV === 'development') {
+      const resetURLhtml = `${req.protocol}://${req.get(
+        'host'
+      )}/password-reset/${resetToken}`;
+      await new Email(user, resetURLhtml).sendPasswordReset();
+    } else {
+      await new Email(user, resetURL, message).sendPasswordReset();
+    }
+    // For API version -- old
+    // if (req.originalUrl.startsWith('/api')) {
+    //   await sendEmail({
+    //     // or use req.body.email
+    //     email: user.email,
+    //     subject: 'Your password reset token (valid for 10 min)',
+    //     message
+    //   });
+    // }
+
+    // For API version -- NEW
+    // await new Email(user, resetURL, message).sendPasswordReset();
 
     res.status(200).json({
       status: 'success',
@@ -282,12 +305,22 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     passwordResetExpires: { $gt: Date.now() }
   });
 
-  // 2) If token not expired, and there is user, set the new password.
+  // 2) ## If token not expired, and there is user, set the new password.
+  // ### FOR RENDERED PAGE
+  // if (!req.originalUrl.startsWith('/api')) {
+  //   if (!user) {
+  //     return next(
+  //       new AppError('Password reset token expired. Please Try again..', 400)
+  //     );
+  //   }
+  // }
+  // ### FOR API
   if (!user) {
     return next(
       new AppError('Password reset token expired. Please Try again..', 400)
     );
   }
+
   // Set the new password and confirm, and delete the reset token end expiration date aswell.
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
@@ -327,6 +360,9 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
   // User.findByIdAndUpdate will NOT work as intended!
 
-  // 4) Log user In, send JWT.
+  // 4) Send email.
+  await new Email(user, 'https://valami.com').sendWelcome();
+
+  // 5) Log user In, send JWT.
   createSendToken(user, 200, res);
 });
