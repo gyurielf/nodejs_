@@ -13,6 +13,7 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRouters');
 const viewRouter = require('./routes/viewRoutes');
+const bookingRouter = require('./routes/bookingRoutes');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
@@ -118,6 +119,9 @@ app.use('/api/v1/users', userRouter);
 
 // ###### 4) REVIEW ROUTES
 app.use('/api/v1/reviews', reviewRouter);
+
+// ###### 5) BOOKING ROUTES
+app.use('/api/v1/booking', bookingRouter);
 
 // HANDLING UNHANDLED ROUTES -- IMPORTANT TO PUT BOTTOM OF THE CODE.
 app.all('*', (req, res, next) => {

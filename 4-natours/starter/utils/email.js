@@ -13,12 +13,19 @@ module.exports = class Email {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.url = url;
-    this.from = `Gyorgy Kallai <${process.env.EMAIL_USERNAME}>`;
+    this.from = `Gyorgy Kallai <gyorgy.kallai@gyuri.io>`;
   }
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      return 1;
+      // sendgrid
+      return nodemailer.createTransport({
+        service: 'SendGrid',
+        auth: {
+          user: process.env.SENDGRID_USERNAME,
+          pass: process.env.SENDGRID_PASSWORD
+        }
+      });
     }
 
     // 1) Create a transporter
@@ -57,6 +64,7 @@ module.exports = class Email {
 
   /**
    * No params, use for welcome e-mails.
+   * send() params should have the pug template name as first, after the the email SUBJECT.
    */
   async sendWelcome() {
     await this.send('welcome', 'Welcome to the Natours Family');
@@ -64,5 +72,12 @@ module.exports = class Email {
 
   async sendPasswordReset() {
     await this.send('forgotPassword', 'Password reset - Natours');
+  }
+
+  async sendPasswordChangeNotification() {
+    await this.send(
+      'passwordChangeNotification',
+      'Password Change Notification - Natours'
+    );
   }
 };

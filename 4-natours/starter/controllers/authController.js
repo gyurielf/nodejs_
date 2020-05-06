@@ -361,7 +361,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // User.findByIdAndUpdate will NOT work as intended!
 
   // 4) Send email.
-  await new Email(user, 'https://valami.com').sendWelcome();
+  await new Email(user).sendPasswordChangeNotification();
 
   // 5) Log user In, send JWT.
   createSendToken(user, 200, res);

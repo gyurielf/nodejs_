@@ -4,6 +4,7 @@ import { displayMap } from './mapbox';
 import { login, logout } from './login';
 import { updateSettings } from './account';
 import { passwordReset, forgotPassword } from './password';
+import { bookTour } from './stripe';
 
 // DOM ELEMENTS
 const mapBox = document.getElementById('map');
@@ -15,6 +16,8 @@ const updateSaveButton = document.querySelector('.form-user-data');
 
 const forgotPasswordForm = document.getElementById('forgotPassword__form');
 const passwordResetForm = document.getElementById('passwordResetForm');
+
+const bookingButton = document.getElementById('bookNow');
 
 // Delegation
 if (mapBox) {
@@ -85,5 +88,13 @@ if (forgotPasswordForm) {
     el.preventDefault();
     const email = document.getElementById('forgotEmail').value;
     await forgotPassword(email);
+  });
+}
+
+if (bookingButton) {
+  bookingButton.addEventListener('click', async (el) => {
+    el.preventDefault();
+    const tour = bookingButton.dataset.tourId;    
+    await bookTour(tour);
   });
 }
