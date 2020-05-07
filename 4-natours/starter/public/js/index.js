@@ -94,7 +94,10 @@ if (forgotPasswordForm) {
 if (bookingButton) {
   bookingButton.addEventListener('click', async (el) => {
     el.preventDefault();
-    const tour = bookingButton.dataset.tourId;    
-    await bookTour(tour);
+    el.target.textContent = 'Processing...'
+    // const tourId = e.target.dataset.tourId;
+    // Same as with the top one, but if both tourId used, we can go simply use this:
+    const { tourId } = el.target.dataset;
+    await bookTour(tourId);
   });
 }

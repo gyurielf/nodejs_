@@ -8914,7 +8914,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var stripe = Stripe("".concat(undefined));
+var stripe = Stripe('pk_test_kV9JiR28aXBhRtRXoCx7ECNs00vobxU8iq');
 
 var bookTour = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(tourId) {
@@ -8935,28 +8935,36 @@ var bookTour = /*#__PURE__*/function () {
           case 4:
             result = _context.sent;
 
+            // Even simple way
+            // const result = await axios(`http://localhost:8000/api/v1/booking/checkout-session/${tourId}`);
             if (result.data.status === 'success') {
-              (0, _alerts.showAlert)('success', 'Order test started!');
-              console.log(result.data.session.id); // window.setTimeout(() => {
+              (0, _alerts.showAlert)('success', 'Order test started!'); // window.setTimeout(() => {
               //   location.reload();
-              // }, 1500);
-            }
+              // }, 1500);      
+            } // 2) Create checkout form + charge credit card
 
-            _context.next = 12;
-            break;
+
+            _context.next = 8;
+            return stripe.redirectToCheckout({
+              sessionId: result.data.session.id
+            });
 
           case 8:
-            _context.prev = 8;
+            _context.next = 14;
+            break;
+
+          case 10:
+            _context.prev = 10;
             _context.t0 = _context["catch"](1);
             console.log('Error...');
             (0, _alerts.showAlert)('error', _context.t0.response.data.message); // console.log(err.result.data.message);
 
-          case 12:
+          case 14:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[1, 8]]);
+    }, _callee, null, [[1, 10]]);
   }));
 
   return function bookTour(_x) {
@@ -9388,17 +9396,20 @@ if (forgotPasswordForm) {
 if (bookingButton) {
   bookingButton.addEventListener('click', /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(el) {
-      var tour;
+      var tourId;
       return regeneratorRuntime.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
               el.preventDefault();
-              tour = bookingButton.dataset.tourId;
-              _context4.next = 4;
-              return (0, _stripe.bookTour)(tour);
+              el.target.textContent = 'Processing...'; // const tourId = e.target.dataset.tourId;
+              // Same as with the top one, but if both tourId used, we can go simply use this:
 
-            case 4:
+              tourId = el.target.dataset.tourId;
+              _context4.next = 5;
+              return (0, _stripe.bookTour)(tourId);
+
+            case 5:
             case "end":
               return _context4.stop();
           }
@@ -9439,7 +9450,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58845" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54696" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -9616,4 +9627,4 @@ function hmrAcceptRun(bundle, id) {
   }
 }
 },{}]},{},["../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
-//# sourceMappingURL=/js/bundle.js.map
+//# sourceMappingURL=/bundle.js.map
