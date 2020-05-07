@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const fs = require('fs');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -47,7 +48,12 @@ app.use(helmet());
  * IF the running environment is DEV, thats the morgan running and logging in dev mode.
  * **/
 if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
+  const accessLogStream = fs.createWriteStream(
+    path.join(__dirname, 'access.log'),
+    { flags: 'a' }
+  );
+  app.use(morgan('dev', { stream: accessLogStream }));
+  // app.use(morgan('dev'));
 }
 
 // RATE LIMITER
