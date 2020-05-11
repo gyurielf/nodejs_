@@ -52,8 +52,7 @@ if (process.env.NODE_ENV === 'development') {
     path.join(__dirname, 'access.log'),
     { flags: 'a' }
   );
-  app.use(morgan('dev', { stream: accessLogStream }));
-  // app.use(morgan('dev'));
+  app.use(morgan('tiny', { stream: accessLogStream }));
 }
 
 // RATE LIMITER

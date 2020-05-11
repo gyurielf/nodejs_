@@ -10,7 +10,8 @@ const {
   getLoginForm,
   getAccount,
   getForgotPasswordForm,
-  getPasswordResetForm
+  getPasswordResetForm,
+  getMyTours
 } = require('../controllers/viewController');
 
 const { createBookingCheckout } = require('../controllers/bookingController');
@@ -29,5 +30,6 @@ router.get('/login', isLoggedIn, getLoginForm);
 // router.use(protect);
 
 router.get('/me', protect, getAccount);
+router.get('/my-tours', protect, getMyTours);
 
 module.exports = router;

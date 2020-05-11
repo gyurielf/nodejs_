@@ -53,7 +53,6 @@ bookingSchema.pre(/^find/, function (next) {
     path: 'tour',
     select: '-__v -passwordChangedAt'
   });
-
   next();
 });
 

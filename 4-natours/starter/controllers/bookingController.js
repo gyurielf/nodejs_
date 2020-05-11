@@ -48,3 +48,24 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // res.redirect(`${req.protocol}://${req.get('host')}/`);
   res.redirect(req.originalUrl.split('?')[0]);
 });
+
+exports.getMyBookings = catchAsync(async (req, res, next) => {
+  const myBookings = await Booking.find({ user: req.user.id });
+
+  const tourIDs = myBookings.map((el) => el.tour);
+  const bookings = await Tour.find({ _id: { $in: tourIDs } });
+
+  res.status(200).json({
+    status: 'success',
+    results: bookings.length,
+    data: {
+      data: bookings
+    }
+  });
+});
+
+exports.getBookings = factory.getAll(Booking);
+exports.getBooking = factory.getOne(Booking);
+exports.createBooking = factory.createOne(Booking);
+exports.updateBooking = factory.updateOne(Booking);
+exports.deleteBooking = factory.deleteOne(Booking);
