@@ -21,7 +21,7 @@ export const login = async (email, password) => {
   try {
     const result = await axios({
       method: 'POST',
-      url: 'http://localhost:8000/api/v1/users/login',
+      url: '/api/v1/users/login',
       data: {
         email,
         password
@@ -63,7 +63,7 @@ export const logout = async () => {
         location.assign('/');
       }, 1500);
     } */
-    const url = 'http://localhost:8000/api/v1/users/logout';
+    const url = '/api/v1/users/logout';
     const rawResponse = await fetch(url);
     const response = await rawResponse.json();
     if (response.status === 'success') {
