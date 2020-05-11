@@ -1,6 +1,6 @@
-*/starter/node_modules/
-*/starter/.cache/
-*/.idea/
-*/config.env
-*/_.eslintrc.js_PROBA
-4-natours/starter/access.log
+node_modules/
+.cache/
+.idea/
+config.env
+_.eslintrc.js_PROBA
+access.log
