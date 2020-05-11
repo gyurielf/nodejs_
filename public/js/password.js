@@ -2,7 +2,7 @@ import axios from 'axios';
 import { showAlert } from './alerts';
 
 export const forgotPassword = async (email) => {
-    console.log(email);
+    // console.log(email);
   try {
     const result = await axios({
       method: 'POST',
@@ -18,9 +18,9 @@ export const forgotPassword = async (email) => {
       }, 1500);
     }
   } catch (err) {
-    console.log('Error...');
+    // console.log('Error...');
     showAlert('error', err.response.data.message);
-    // console.log(err.result.data.message);
+    console.log(err.response.data.message);
   }
 };
 

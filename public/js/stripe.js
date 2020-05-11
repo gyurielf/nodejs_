@@ -3,7 +3,7 @@ import { showAlert } from './alerts';
 const stripe = Stripe('pk_test_kV9JiR28aXBhRtRXoCx7ECNs00vobxU8iq');
 
 export const bookTour = async (tourId) => {
-  console.log(tourId);
+  // console.log(tourId);
   // 1) get the session from the server
   try {
     const result = await axios({
@@ -25,9 +25,9 @@ export const bookTour = async (tourId) => {
     });
     
   } catch (err) {
-    console.log('Error...');
+    // console.log('Error...');
     showAlert('error', err.response.data.message);
-    // console.log(err.result.data.message);
+    console.log(err.response.data.message);
   }
 
   // 3)

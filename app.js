@@ -8,6 +8,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xssDefend = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
@@ -103,6 +104,8 @@ app.use((req, res, next) => {
   next();
 }); 
 **/
+// TEXT compression
+app.use(compression());
 
 /**
  * Test middleware, sometimes useful.
