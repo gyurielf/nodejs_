@@ -20,6 +20,9 @@ const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
+// Heroku is basically is a proxy, we have to enable trust proxy.
+app.enable('trust proxy');
+
 // SET (built-in) server side rendering template engine.
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));

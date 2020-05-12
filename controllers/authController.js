@@ -21,19 +21,18 @@ const signToken = (id) => {
  * @param {String} statusCode HTTP status code
  * @param {Object} res The res object is available everywhere! Not need to create the variable.
  */
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
   // Cookie settings and options.
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
-    secure: false,
-    httpOnly: true
+    httpOnly: true,
+    // In production cookies works only in HTTPS if secure = true
+    // if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+    secure: req.secure || req.headers('x-forwarded-proto' === 'https')
   };
-
-  // In production cookies works only in HTTPS if secure = true
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
   res.cookie('jwt', token, cookieOptions);
 
@@ -70,7 +69,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   // console.log(url);
   await new Email(newUser, url).sendWelcome();
   // Ezzel helyettesítem a lenti kódot. Delegalva lett FN-be.
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
   /*  const token = signToken(newUser._id);
   res.status(201).json({
     status: 'success',
@@ -102,7 +101,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // 3) If everything ok, send token to client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
   /* const token = signToken(user._id);
   res.status(200).json({
     status: 'success',
@@ -332,7 +331,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // DONE in the userModel.
 
   // 4) Log the user in, send JWT.
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -364,5 +363,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await new Email(user).sendPasswordChangeNotification();
 
   // 5) Log user In, send JWT.
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
