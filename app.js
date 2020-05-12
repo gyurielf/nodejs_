@@ -9,6 +9,7 @@ const xssDefend = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
@@ -27,9 +28,15 @@ app.enable('trust proxy');
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
+// disable header information about the enginge and
 app.disable('x-powered-by');
 
 // ###### 1) GLOBAL MIDDLEWARES
+// Implement CORS
+app.use(cors());
+
+app.options('*', cors());;
+
 // If we dont use the next at the and, the req res cycle will be stuck.
 
 /**
