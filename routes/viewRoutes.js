@@ -14,8 +14,6 @@ const {
   getMyTours
 } = require('../controllers/viewController');
 
-const { createBookingCheckout } = require('../controllers/bookingController');
-
 router.get('/password-reset/:tokenId', getPasswordResetForm);
 router.get('/forgot-password', getForgotPasswordForm);
 
