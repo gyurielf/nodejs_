@@ -11,8 +11,11 @@ const {
   getAccount,
   getForgotPasswordForm,
   getPasswordResetForm,
-  getMyTours
+  getMyTours,
+  alerts
 } = require('../controllers/viewController');
+
+router.use(alerts);
 
 router.get('/password-reset/:tokenId', getPasswordResetForm);
 router.get('/forgot-password', getForgotPasswordForm);

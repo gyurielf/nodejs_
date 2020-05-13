@@ -5,6 +5,8 @@ import { login, logout } from './login';
 import { updateSettings } from './account';
 import { passwordReset, forgotPassword } from './password';
 import { bookTour } from './stripe';
+import { showAlert } from './alerts';
+
 
 // DOM ELEMENTS
 const mapBox = document.getElementById('map');
@@ -100,4 +102,9 @@ if (bookingButton) {
     const { tourId } = el.target.dataset;
     await bookTour(tourId);
   });
+}
+
+const alertMessage = document.querySelector('body').dataset.alert;
+if (alert) {
+  showAlert('success', alertMessage, 15);
 }
