@@ -17,6 +17,7 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRouters');
 const viewRouter = require('./routes/viewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
@@ -35,7 +36,7 @@ app.disable('x-powered-by');
 // Implement CORS
 app.use(cors());
 
-app.options('*', cors());;
+app.options('*', cors());
 
 // If we dont use the next at the and, the req res cycle will be stuck.
 
@@ -73,6 +74,12 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again in an hour!'
 });
 app.use('/api', limiter);
+
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json ' }),
+  bookingController.webhookCheckout
+);
 
 /**
  * BODY PARSER, reading data from body into req.body
