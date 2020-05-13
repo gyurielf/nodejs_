@@ -9,6 +9,7 @@ const factory = require('./handlerFactory');
 exports.getCheckOutSession = catchAsync(async (req, res, next) => {
   // 1) get currently booked tour
   const tour = await Tour.findById(req.params.tourID);
+
   // 2) create checkout session
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
@@ -23,7 +24,9 @@ exports.getCheckOutSession = catchAsync(async (req, res, next) => {
       {
         name: `${tour.name} Tour`,
         description: `${tour.summary}`,
-        images: ['https://www.natours.dev/img/tours/tour-1-cover.jpg'],
+        images: [
+          `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`
+        ],
         amount: tour.price * 100, // we have to multiple with 100, because its count in CENTs
         currency: 'usd',
         quantity: 1
@@ -69,8 +72,7 @@ exports.getMyBookings = catchAsync(async (req, res, next) => {
 const createBookingCheckout = catchAsync(async (session) => {
   const tour = session.client_reference_id;
   const user = (await User.findOne({ email: session.customer_email })).id;
-  const price = session.line_items[0].amount / 100;
-
+  const price = session.display_items[0].amount / 100;
   await Booking.create({ tour, user, price });
 });
 
